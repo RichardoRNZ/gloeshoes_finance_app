@@ -1,5 +1,7 @@
 import Customer from "@/Components/CustomerMenu/Customer";
 import Dashboard from "@/Components/Dashboard";
+import Product from "@/Components/ProductMenu/Product";
+
 import { BarChart, Construction, Groups, Home, Inventory2, Receipt } from "@mui/icons-material";
 
 export const renderMenuIcon = (menu) => {
@@ -27,8 +29,8 @@ export const sidebarMenuRouter = (menuUrl, props) => {
             return <Dashboard />;
         case "/customer":
             return <Customer {...props}/>;
-        // case "/products":
-        //     return <Inventory2 />;
+        case "/product":
+            return <Product {...props}/>;
         // case "Orders":
         //     return <Receipt />;
         // case "Reports":

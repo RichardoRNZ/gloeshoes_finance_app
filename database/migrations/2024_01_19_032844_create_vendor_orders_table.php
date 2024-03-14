@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('vendor_orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('product_id')->constrained('products','id');;
+            $table->foreignId('product_id')->constrained('products','id');;
             $table->string('color');
             $table->String('size');
             $table->string('notes');

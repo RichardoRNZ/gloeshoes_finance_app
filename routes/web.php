@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +35,13 @@ Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard'
 
 // CUSTOMER
 Route::get('/customer', [CustomerController::class,'index'])->name('customers')->middleware('auth');
-Route::get('/customers', [CustomerController::class,'getAllCustomer'])->name('customers_data');
-Route::post('/customers', [CustomerController::class,'createCustomer'])->name('add_customer');
-Route::put('/customers/{id}', [CustomerController::class,'updateCustomer'])->name('update_customer');
-Route::delete('/customers/{id}', [CustomerController::class,'deleteCustomer'])->name('delete_customer');
+Route::get('/customer/all', [CustomerController::class,'getAllCustomer'])->name('customers_data')->middleware('auth');
+Route::post('/customers', [CustomerController::class,'createCustomer'])->name('add_customer')->middleware('auth');
+Route::put('/customers/update', [CustomerController::class,'updateCustomer'])->name('update_customer')->middleware('auth');
+Route::delete('/customers/{id}', [CustomerController::class,'deleteCustomer'])->name('delete_customer')->middleware('auth');
+
+// PRODUCT
+Route::get('/product', [ProductController::class,'index'])->name('products')->middleware('auth');
+Route::get('/product/all', [ProductController::class,'getAllProducts'])->name('products_data')->middleware('auth');
+Route::post('/product', [ProductController::class,'createNewProduct'])->name('add_product')->middleware('auth');
+

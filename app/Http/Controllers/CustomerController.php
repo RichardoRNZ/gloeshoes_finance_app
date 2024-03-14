@@ -13,8 +13,6 @@ class CustomerController extends Controller
     //
     public function index()
     {
-
-
         return Inertia::render('Home');
     }
 
@@ -39,7 +37,7 @@ class CustomerController extends Controller
             return [
                 'id' => $item->id,
                 // numbering each item in page
-                'no' => $key + 1 + (($customers->currentPage() - 1) * $customers->currentPage()),
+                'no' => $key + 1 + (($customers->currentPage() - 1) * $customers->perPage()),
                 'name' => $item->name,
                 'email' => $item->email,
                 'address' => $item->address,
@@ -73,20 +71,21 @@ class CustomerController extends Controller
             'created_at' => Carbon::now()->timestamp,
         ];
         Customer::create($customers);
-        return response()->json(['message' => 'Successfully add customer'], 200);
+        return response()->json(['message' => 'Successfully add customer', 'customer' => $customers], 200);
 
     }
 
-    public function updateCustomer(Request $request){
+    public function updateCustomer(Request $request)
+    {
         $customers = $request->all();
 
         foreach ($customers as $customer) {
-            $validator = Validator::make($customer,[
+            $validator = Validator::make($customer, [
                 'id' => 'required|integer',
                 'name' => 'required|string',
                 'email' => 'required|email',
-                'address' =>'required|string',
-                'phoneNumber' =>'required|regex:/^\+(?:[0-9] ?){6,14}[0-9]$/',
+                'address' => 'required|string',
+                'phoneNumber' => 'required|regex:/^\+(?:[0-9] ?){6,14}[0-9]$/',
 
             ]);
             if ($validator->fails()) {
@@ -100,11 +99,9 @@ class CustomerController extends Controller
                 'address' => $customer['address'],
                 'instagram' => $customer['instagram'],
                 'phone_number' => $customer['phoneNumber'],
-                // 'updated_by' => $customer['updatedBy'],
-                // 'updated_at' => Carbon::now()->timestamp,
             ]);
         }
-        return response()->json(['message' => 'Successfully update customer'], 200);
+        return response()->json(['message' => 'Successfully update customer', 'customers' =>$customers], 200);
 
     }
 

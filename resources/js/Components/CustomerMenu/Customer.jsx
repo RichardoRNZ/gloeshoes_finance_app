@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
     Breadcrumbs,
-    Button,
     Link,
     TextField,
     Typography,
 } from "@mui/material";
-import { Add, Download, Group, Save } from "@mui/icons-material";
+import { Group } from "@mui/icons-material";
 import AddCustomerForm from "./AddCustomerForm";
 import Datatable from "../Datatable";
 import axios from "axios";
 import Swal from "sweetalert2";
 import Loading from "../Loading";
 import ConfirmModal from "../ConfirmModal";
+import HeaderTableButton from "../HeaderTableButton";
+import Product from "../ProductMenu/Product";
 
 const Customer = (props) => {
     const columns = [
@@ -43,24 +44,25 @@ const Customer = (props) => {
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({
         pageSize: 10,
-        page: 1,
+        page: 0,
     });
     const [search, setSearch] = useState("");
-    const [showLoading,setShowLoading] = useState(false);
+    const [showLoading, setShowLoading] = useState(false);
     const [rowId, setRowId] = useState(0);
+    const [isUpdated, setIsUpdated] = useState(false);
 
-    console.log(props);
+
     useEffect(() => {
         fetchCustomersData();
     }, [props.ziggy.location, paginationModel, search]);
 
     const fetchCustomersData = async (
-        page = paginationModel.page,
+        page = paginationModel.page+1,
         size = paginationModel.pageSize
     ) => {
         try {
             setIsLoading(true);
-            const response = await axios.get("/customers", {
+            const response = await axios.get("/customer/all", {
                 params: {
                     perPage: size,
                     page: page,
@@ -95,13 +97,43 @@ const Customer = (props) => {
         await deleteCustomerData(id);
         setRowId(0);
         setShowLoading(false);
-
-
     };
+    const updateCustomerData = async () => {
+        try {
+            const response = await axios.put("/customers/update", rows);
+            Swal.fire({
+                icon: "success",
+                title: response.data.message,
+                timer: 1500,
+            });
+            fetchCustomersData();
+            setIsUpdated(false);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops",
+                text : error.response.data,
+                timer: 1500,
+            });
+            setIsUpdated(true);
+        }
+    };
+    const handleSaveUpdateClick = async () => {
+        setShowLoading(true);
+        await updateCustomerData();
+        setShowLoading(false);
+    };
+    const handleDiscardChanges = () => {
+        fetchCustomersData();
+        Swal.fire({
+            icon: "success",
+            title: "Successfully discard changes",
+            timer: 1500,
+        });
+        setIsUpdated(false);
+    }
 
-    console.log(paginationModel);
-    console.log(search);
-    console.log("rowId",rowId)
+
     return (
         <>
             <Loading isLoading={showLoading} />
@@ -129,31 +161,7 @@ const Customer = (props) => {
                                 </h5>
 
                                 <div className="d-flex justify-content-end button-group mb-4">
-                                    <Button
-                                        variant="contained"
-                                        color="success"
-                                        sx={{ marginRight: "10px" }}
-                                    >
-                                        <Download />
-                                        Download
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        sx={{ marginRight: "10px" }}
-                                    >
-                                        <Save />
-                                        Save Update
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        className="mr-4"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#customerModal"
-                                    >
-                                        <Add />
-                                        Add Customer
-                                    </Button>
+                                   <HeaderTableButton isUpdated={isUpdated} addButton="#customerModal" typeAddButton="Add Customer"/>
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">
                                     <TextField
@@ -176,6 +184,7 @@ const Customer = (props) => {
                                         paginationModel={paginationModel}
                                         setPaginationModel={setPaginationModel}
                                         setRowId={setRowId}
+                                        setIsUpdated={setIsUpdated}
                                     />
                                 </div>
                             </div>
@@ -187,12 +196,25 @@ const Customer = (props) => {
                 user={props.auth.user.username}
                 getCustomer={fetchCustomersData}
             />
-             <ConfirmModal
+            <ConfirmModal
                 id="deleteModal"
                 type="delete"
                 text="Are you sure want to delete?"
-                handleClick={()=>handleDeleteClick(rowId)}
+                handleClick={() => handleDeleteClick(rowId)}
             />
+             <ConfirmModal
+                id="updateModal"
+                type="update"
+                text="Are you sure want to save?"
+                handleClick={() => handleSaveUpdateClick()}
+            />
+             <ConfirmModal
+                id="discardModal"
+                type="delete"
+                text="Are you sure want to discard this change? Any changes will be lost"
+                handleClick={() => handleDiscardChanges()}
+            />
+
         </>
     );
 };

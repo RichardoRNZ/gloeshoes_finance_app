@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('detail_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('header_id')->constrained('header_transactions','id');
-            $table->foreignUuid('product_id')->constrained('products','id');
+            $table->foreignId('product_id')->constrained('products','id');
             $table->string('color');
             $table->string('size');
             $table->text('notes');

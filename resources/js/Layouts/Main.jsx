@@ -110,7 +110,7 @@ export default function Main(props) {
     const menu = [
         "Dashboard",
         "Customers",
-        // "Products",
+        "Products",
         // "Orders",
         // "Reports",
         // "Vendors",

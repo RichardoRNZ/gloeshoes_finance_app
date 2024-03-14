@@ -1,47 +1,45 @@
 import { Close } from "@mui/icons-material";
-import { Button, InputAdornment, TextField } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import axios from "axios";
-
-import React, { useState } from "react";
+import { Button, TextField } from "@mui/material";
+import { MuiFileInput } from "mui-file-input";
+import React from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
-import ConfirmModal from "../ConfirmModal";
-import Loading from "../Loading";
 
-const AddCustomerForm = (props) => {
+const AddProductForm = (props) => {
     const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
-    const [email, setEmail] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [instagramAccount, setInstagramAccount] = useState("");
+    const [sku, setSku] = useState("");
+    const [stock, setStock] = useState(null);
+    const [price, setPrice] = useState(null);
+    const [cost, setCost] = useState(null);
+    const [image, setImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const resetField = () => {
-        setName("");
-        setAddress("");
-        setEmail("");
-        setPhoneNumber("");
-        setInstagramAccount("");
+    const handleFileChange = (newFile) => {
+        setImage(newFile);
     };
-
-    const saveCustomer = async () => {
+    const saveProduct = async (product) => {
         try {
             const params = {
                 name: name,
-                email: email,
-                address: address,
-                phoneNumber: phoneNumber,
-                instagram: instagramAccount,
+                sku: sku,
+                stock: stock,
+                price: price,
+                cost: cost,
+                image: image,
                 createdBy: props.user,
+
             };
-            const response = await axios.post("/customers", params);
-            resetField();
+            console.log(image);
+            const response = await axios.post("/product", params, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             Swal.fire({
                 icon: "success",
                 title: response.data.message,
                 timer: 1500,
             });
-            props.getCustomer();
         } catch (error) {
             Swal.fire({
                 title: "Oops",
@@ -51,29 +49,23 @@ const AddCustomerForm = (props) => {
             });
         }
     };
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        await saveCustomer();
-        setIsLoading(false);
-    };
 
     return (
         <>
-            <Loading isLoading={isLoading} />
             <div
                 class="modal fade"
-                id="customerModal"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
+                id="productModal"
                 tabindex="-1"
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
             >
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">
-                                Add Customer
+                                Add Product
                             </h5>
                             <button
                                 type="button"
@@ -85,15 +77,17 @@ const AddCustomerForm = (props) => {
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form onSubmit={(e)=>e.preventDefault()}>
+                            <form
+                                onSubmit={(e) => e.preventDefault()}
+                                enctype="multipart/form-data"
+                            >
                                 <div className="form-group">
                                     <div className="row">
-                                        <div className="col col-lg-6 col-md-4 col-sm-2">
+                                        <div className="col col-lg-4 col-md-4 col-sm-2">
                                             <TextField
-                                                id="outlined-basic"
                                                 label={
                                                     <span>
-                                                        Customer Name
+                                                        SKU
                                                         <span className="text-danger">
                                                             *
                                                         </span>
@@ -101,53 +95,70 @@ const AddCustomerForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100 mb-4"
+                                                value={sku}
+                                                onChange={(e) =>
+                                                    setSku(e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="col col-lg-4 col-md-4 col-sm-2">
+                                            <TextField
+                                                id="outlined-basic"
+                                                label={
+                                                    <span>
+                                                        Product Name
+                                                        <span className="text-danger">
+                                                            *
+                                                        </span>
+                                                    </span>
+                                                }
+                                                variant="outlined"
+                                                className="w-100"
                                                 value={name}
                                                 onChange={(e) =>
                                                     setName(e.target.value)
                                                 }
                                             />
                                         </div>
-                                        <div className="col col-lg-6 col-md-4 col-sm-2">
-                                            <TextField
-                                                id="outlined-basic"
-                                                label="Instagram Account"
-                                                variant="outlined"
-                                                className="w-100"
-                                                value={instagramAccount}
-                                                onChange={(e) =>
-                                                    setInstagramAccount(
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col col-lg-6 col-md-4 col-sm-2">
+                                        <div className="col col-lg-4 col-md-4 col-sm-2">
                                             <TextField
                                                 id="outlined-basic"
                                                 label={
                                                     <span>
-                                                        Phone Number
+                                                        Stock
                                                         <span className="text-danger">
                                                             *
                                                         </span>
                                                     </span>
                                                 }
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            +62
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
                                                 variant="outlined"
                                                 className="w-100 mb-4"
-                                                value={phoneNumber}
+                                                type="number"
+                                                value={stock}
                                                 onChange={(e) =>
-                                                    setPhoneNumber(
-                                                        e.target.value
-                                                    )
+                                                    setStock(e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col col-lg-6 col-md-4 col-sm-2">
+                                            <TextField
+                                                id="outlined-basic"
+                                                type="number"
+                                                label={
+                                                    <span>
+                                                        Cost of Good Stock
+                                                        <span className="text-danger">
+                                                            *
+                                                        </span>
+                                                    </span>
+                                                }
+                                                variant="outlined"
+                                                className="w-100"
+                                                value={cost}
+                                                onChange={(e) =>
+                                                    setCost(e.target.value)
                                                 }
                                             />
                                         </div>
@@ -156,7 +167,7 @@ const AddCustomerForm = (props) => {
                                                 id="outlined-basic"
                                                 label={
                                                     <span>
-                                                        Email
+                                                        Price
                                                         <span className="text-danger">
                                                             *
                                                         </span>
@@ -164,31 +175,28 @@ const AddCustomerForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100"
-                                                value={email}
+                                                type="number"
+                                                value={price}
                                                 onChange={(e) =>
-                                                    setEmail(e.target.value)
+                                                    setPrice(e.target.value)
                                                 }
                                             />
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col col-lg-12">
-                                            <TextField
-                                                id="outlined-textarea"
+                                        <div className="col col-lg-12 mt-4">
+                                            <MuiFileInput
+                                                className="w-100"
                                                 label={
                                                     <span>
-                                                        Address
+                                                        Image
                                                         <span className="text-danger">
                                                             *
                                                         </span>
                                                     </span>
                                                 }
-                                                className="w-100"
-                                                multiline
-                                                value={address}
-                                                onChange={(e) =>
-                                                    setAddress(e.target.value)
-                                                }
+                                                value={image}
+                                                onChange={handleFileChange}
                                             />
                                         </div>
                                     </div>
@@ -196,28 +204,21 @@ const AddCustomerForm = (props) => {
                             </form>
                         </div>
                         <div class="modal-footer">
-                            {/* <Button
-                                variant="contained"
-                                data-bs-dismiss="modal"
-                                color="secondary"
-                                sx={{ marginRight: "10px" }}
-                            >
-                                Cancel
-                            </Button> */}
                             <Button
                                 variant="contained"
                                 color="error"
                                 data-bs-dismiss="modal"
                                 sx={{ marginRight: "10px" }}
-                                onClick={() => resetField()}
+                                // onClick={() => resetField()}
                             >
                                 Discard
                             </Button>
                             <Button
                                 variant="contained"
-                                data-bs-toggle="modal"
-                                data-bs-target="#saveModal"
+                                // data-bs-toggle="modal"
+                                // data-bs-target="#saveModal"
                                 data-bs-dismiss="modal"
+                                onClick={() => saveProduct()}
                             >
                                 Submit
                             </Button>
@@ -225,14 +226,8 @@ const AddCustomerForm = (props) => {
                     </div>
                 </div>
             </div>
-            <ConfirmModal
-                id="saveModal"
-                type="submit"
-                text="Are you sure want to save?"
-                handleClick={handleSubmit}
-            />
         </>
     );
 };
 
-export default AddCustomerForm;
+export default AddProductForm;

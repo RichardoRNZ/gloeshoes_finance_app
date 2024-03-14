@@ -80,13 +80,8 @@ function CustomNoRowsOverlay() {
 }
 
 const Datatable = (props) => {
-    // const [rows, setRows] = useState(props.rows);
-    // const [columns, setColumns] = useState(props.columns);
     const [rowModesModel, setRowModesModel] = useState({});
     const [isEdit, setIsEdit] = useState(false);
-
-    // const [isColumnAdded, setIsColumnAdded] = useState(false);
-    // const idCounter = useRef(0);
 
     const object = {
         field: "actions",
@@ -131,7 +126,9 @@ const Datatable = (props) => {
                 <GridActionsCellItem
                     icon={<Delete />}
                     label="Delete"
-                    onClick={()=>{props.setRowId(id)}}
+                    onClick={() => {
+                        props.setRowId(id);
+                    }}
                     color="inherit"
                 />,
             ];
@@ -183,7 +180,7 @@ const Datatable = (props) => {
                         data-bs-toggle="modal"
                         data-bs-target="#deleteModal"
                         color="inherit"
-                        onClick={()=>props.setRowId(id)}
+                        onClick={() => props.setRowId(id)}
                     />,
                 ];
             },
@@ -212,12 +209,8 @@ const Datatable = (props) => {
             [id]: { mode: GridRowModes.View },
         });
         setIsEdit(!isEdit);
+        props.setIsUpdated(true);
     };
-
-    // const handleDeleteClick = (id) => () => {
-    //     setRows(rows.filter((row) => row.id !== id));
-    //     console.log(rows)
-    // };
 
     const handleCancelClick = (id) => () => {
         setRowModesModel({
@@ -227,7 +220,7 @@ const Datatable = (props) => {
 
         const editedRow = props.rows.find((row) => row.id === id);
         if (editedRow.isNew) {
-            setRows(props.rows.filter((row) => row.id !== id));
+            props.setRows(props.rows.filter((row) => row.id !== id));
         }
     };
 
@@ -242,12 +235,7 @@ const Datatable = (props) => {
     const handleRowModesModelChange = (newRowModesModel) => {
         setRowModesModel(newRowModesModel);
     };
-    // console.log(isEdit);
-    console.log("model",rowModesModel);
-    console.log("child", props.rows);
-    console.log(props.isLoading);
 
-    // console.log("checking type",typeof  props.handleDeleteClick(rowId))
     console.log(props);
     return (
         <>
@@ -284,7 +272,6 @@ const Datatable = (props) => {
                     onPaginationModelChange={props.setPaginationModel}
                 />
             </div>
-
         </>
     );
 };

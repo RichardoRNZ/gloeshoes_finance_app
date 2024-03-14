@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+
+class productController extends Controller
+{
+
+    public function index()
+    {
+
+        return Inertia::render('Home');
+    }
+
+    private function getStatusOfStock($stock)
+    {
+        if ($stock == 0) {
+            return "Out of stock";
+        } else if ($stock < 5) {
+            return "Low stock";
+        } else {
+            return "In stock";
+        }
+    }
+    public function getAllproducts(Request $request)
+    {
+        $perPage = $request->query('perPage', 10);
+        $page = $request->query('page', 1);
+        $query = Product::query();
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', "%$searchTerm%")
+                ->orWhere('sku', 'like', "%$searchTerm%");
+        }
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // Mapping product data
+        $products->getCollection()->transform(function ($item, $key) use ($products) {
+            return [
+                'id' => $item->id,
+                // numbering each item in page
+                'no' => $key + 1 + (($products->currentPage() - 1) * $products->perPage()),
+                'name' => $item->name,
+                'sku' => $item->sku,
+                'price' => "Rp. " . $item->price,
+                'cost' => "Rp. " . $item->cost,
+                'stock' => $item->stock,
+                'status' => $this->getStatusOfStock($item->stock),
+                'image' => $item->image
+
+            ];
+        });
+        return response()->json($products);
+    }
+
+    public function createNewProduct(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'sku' => 'required',
+            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:1000',
+            'cost' => 'required|numeric|min:1000|',
+            'image' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $message = implode(" ", $validator->errors()->all());
+            return response()->json($message, 400);
+        }
+        $fileObj = $request->file('image');
+        $name = $fileObj->getClientOriginalName();
+        $ext = $fileObj->getClientOriginalExtension();
+        $new_file_name = $name . time() . '.' . $ext;
+        $fileObj->storeAs('public/images', $new_file_name);
+        $product = [
+            'name' => $request->name,
+            'sku' => $request->sku,
+            'stock' => $request->stock,
+            'price' => $request->price,
+            'cost' => $request->cost,
+            'image' => $new_file_name,
+            'created_by' => $request->createdBy
+        ];
+        Product::create($product);
+        return response()->json(['message' => "Successfully add product", 'product' =>$product],200);
+    }
+
+public function deleteProductById($id){
+    $product = Product::findOrFail($id);
+    $product->delete();
+    return response()->json(['message' => "Successfully delete product"]);
+}
+}
