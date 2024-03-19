@@ -43,5 +43,7 @@ Route::delete('/customers/{id}', [CustomerController::class,'deleteCustomer'])->
 // PRODUCT
 Route::get('/product', [ProductController::class,'index'])->name('products')->middleware('auth');
 Route::get('/product/all', [ProductController::class,'getAllProducts'])->name('products_data')->middleware('auth');
+Route::get('/product/{id}', [ProductController::class,'getProductById'])->name('products_details')->middleware('auth');
 Route::post('/product', [ProductController::class,'createNewProduct'])->name('add_product')->middleware('auth');
-
+Route::post('/product/update', [ProductController::class,'updateProduct'])->name('update_products')->middleware('auth');
+Route::delete('/product/delete/{id}', [ProductController::class,'deleteProductById'])->name('delete_products')->middleware('auth');

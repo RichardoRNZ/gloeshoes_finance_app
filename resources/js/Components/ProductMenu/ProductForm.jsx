@@ -2,34 +2,44 @@ import { Close } from "@mui/icons-material";
 import { Button, TextField } from "@mui/material";
 import { MuiFileInput } from "mui-file-input";
 import React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import ConfirmModal from "../ConfirmModal";
+import Loading from "../Loading";
 
 const AddProductForm = (props) => {
-    const [name, setName] = useState("");
-    const [sku, setSku] = useState("");
-    const [stock, setStock] = useState(null);
-    const [price, setPrice] = useState(null);
-    const [cost, setCost] = useState(null);
     const [image, setImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [formData, setFormData] = useState({});
+
+    const initialState = props.isNew
+        ? { name: "", sku: "", stock: "", price: "", cost: "" }
+        : {
+              name: props.product.name,
+              sku: props.product.sku,
+              stock: props.product.stock,
+              price: props.product.price,
+              cost: props.product.cost,
+          };
+    useEffect(() => {
+        setFormData(initialState);
+        setImage(null);
+    }, [props.isNew, props.product]);
 
     const handleFileChange = (newFile) => {
         setImage(newFile);
     };
-    const saveProduct = async (product) => {
+
+    const saveProduct = async () => {
         try {
             const params = {
-                name: name,
-                sku: sku,
-                stock: stock,
-                price: price,
-                cost: cost,
+                ...formData,
                 image: image,
                 createdBy: props.user,
-
             };
-            console.log(image);
+            setIsLoading(true);
             const response = await axios.post("/product", params, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -40,6 +50,10 @@ const AddProductForm = (props) => {
                 title: response.data.message,
                 timer: 1500,
             });
+            setFormData(initialState);
+            setImage(null);
+            setIsLoading(false);
+            props.fetchProductsData();
         } catch (error) {
             Swal.fire({
                 title: "Oops",
@@ -49,9 +63,48 @@ const AddProductForm = (props) => {
             });
         }
     };
+    const updateProduct = async () => {
+        try {
+            const params = {
+                ...formData,
+                image: image,
+                updatedBy: props.user,
+                id: props.product.id,
+            };
+            setIsLoading(true);
+            const response = await axios.post("/product/update", params, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            Swal.fire({
+                icon: "success",
+                title: response.data.message,
+                timer: 1500,
+            });
+            setIsLoading(false);
+            props.fetchProductsData();
+        } catch (error) {
+            Swal.fire({
+                title: "Oops",
+                text: error.response.data,
+                icon: "error",
+                timer: 1500,
+            });
+        }
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
     return (
         <>
+            <Loading isLoading={isLoading} />
             <div
                 class="modal fade"
                 id="productModal"
@@ -65,7 +118,7 @@ const AddProductForm = (props) => {
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">
-                                Add Product
+                                {props.isNew ? "Add Product" : "Update Product"}
                             </h5>
                             <button
                                 type="button"
@@ -95,9 +148,10 @@ const AddProductForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100 mb-4"
-                                                value={sku}
+                                                value={formData.sku}
+                                                name="sku"
                                                 onChange={(e) =>
-                                                    setSku(e.target.value)
+                                                    handleChange(e)
                                                 }
                                             />
                                         </div>
@@ -114,9 +168,10 @@ const AddProductForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100"
-                                                value={name}
+                                                value={formData.name}
+                                                name="name"
                                                 onChange={(e) =>
-                                                    setName(e.target.value)
+                                                    handleChange(e)
                                                 }
                                             />
                                         </div>
@@ -134,9 +189,10 @@ const AddProductForm = (props) => {
                                                 variant="outlined"
                                                 className="w-100 mb-4"
                                                 type="number"
-                                                value={stock}
+                                                value={formData.stock}
+                                                name="stock"
                                                 onChange={(e) =>
-                                                    setStock(e.target.value)
+                                                    handleChange(e)
                                                 }
                                             />
                                         </div>
@@ -156,9 +212,10 @@ const AddProductForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100"
-                                                value={cost}
+                                                value={formData.cost}
+                                                name="cost"
                                                 onChange={(e) =>
-                                                    setCost(e.target.value)
+                                                    handleChange(e)
                                                 }
                                             />
                                         </div>
@@ -176,9 +233,10 @@ const AddProductForm = (props) => {
                                                 variant="outlined"
                                                 className="w-100"
                                                 type="number"
-                                                value={price}
+                                                value={formData.price}
+                                                name="price"
                                                 onChange={(e) =>
-                                                    setPrice(e.target.value)
+                                                    handleChange(e)
                                                 }
                                             />
                                         </div>
@@ -190,14 +248,31 @@ const AddProductForm = (props) => {
                                                 label={
                                                     <span>
                                                         Image
-                                                        <span className="text-danger">
-                                                            *
-                                                        </span>
+                                                        {props.isNew ? (
+                                                            <span className="text-danger">
+                                                                *
+                                                            </span>
+                                                        ) : (
+                                                            ""
+                                                        )}
                                                     </span>
                                                 }
                                                 value={image}
-                                                onChange={handleFileChange}
+                                                onChange={(newfile) =>
+                                                    handleFileChange(newfile)
+                                                }
+                                                name="image"
                                             />
+                                            {!props.isNew && (
+                                                <img
+                                                    src={
+                                                        "/storage/images/" +
+                                                        props.product.image
+                                                    }
+                                                    className="mt-3"
+                                                    style={{ maxHeight: "25%" }}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -209,16 +284,15 @@ const AddProductForm = (props) => {
                                 color="error"
                                 data-bs-dismiss="modal"
                                 sx={{ marginRight: "10px" }}
-                                // onClick={() => resetField()}
+                                onClick={() => setFormData(initialState)}
                             >
                                 Discard
                             </Button>
                             <Button
                                 variant="contained"
-                                // data-bs-toggle="modal"
-                                // data-bs-target="#saveModal"
+                                data-bs-toggle="modal"
+                                data-bs-target="#saveModal"
                                 data-bs-dismiss="modal"
-                                onClick={() => saveProduct()}
                             >
                                 Submit
                             </Button>
@@ -226,6 +300,14 @@ const AddProductForm = (props) => {
                     </div>
                 </div>
             </div>
+            <ConfirmModal
+                id="saveModal"
+                type="submit"
+                text="Are you sure want to save?"
+                handleClick={
+                    props.isNew ? () => saveProduct() : () => updateProduct()
+                }
+            />
         </>
     );
 };

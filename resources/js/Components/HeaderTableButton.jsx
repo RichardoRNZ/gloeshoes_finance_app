@@ -43,9 +43,10 @@ const HeaderTableButton = (props) => {
                         className="mr-4"
                         data-bs-toggle="modal"
                         data-bs-target={props.addButton}
+                        onClick={props.typeAddButton==="product"?()=>props.setIsNew(true):null}
                     >
                         <Add />
-                        {props.typeAddButton}
+                        {"Add "+props.typeAddButton}
                     </Button>
                 </>
             )}

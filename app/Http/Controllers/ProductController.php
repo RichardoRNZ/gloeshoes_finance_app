@@ -51,7 +51,7 @@ class productController extends Controller
                 'cost' => "Rp. " . $item->cost,
                 'stock' => $item->stock,
                 'status' => $this->getStatusOfStock($item->stock),
-                'image' => $item->image
+                'image' => "/storage/images/" . $item->image
 
             ];
         });
@@ -65,7 +65,7 @@ class productController extends Controller
             'sku' => 'required',
             'stock' => 'required|numeric',
             'price' => 'required|numeric|min:1000',
-            'cost' => 'required|numeric|min:1000|',
+            'cost' => 'required|numeric|min:1000',
             'image' => 'required',
         ]);
 
@@ -73,27 +73,74 @@ class productController extends Controller
             $message = implode(" ", $validator->errors()->all());
             return response()->json($message, 400);
         }
-        $fileObj = $request->file('image');
-        $name = $fileObj->getClientOriginalName();
-        $ext = $fileObj->getClientOriginalExtension();
-        $new_file_name = $name . time() . '.' . $ext;
-        $fileObj->storeAs('public/images', $new_file_name);
         $product = [
             'name' => $request->name,
             'sku' => $request->sku,
             'stock' => $request->stock,
             'price' => $request->price,
             'cost' => $request->cost,
-            'image' => $new_file_name,
+            'image' => $this->handleFileUpload($request),
             'created_by' => $request->createdBy
         ];
         Product::create($product);
-        return response()->json(['message' => "Successfully add product", 'product' =>$product],200);
+        return response()->json(['message' => "Successfully add product", 'product' => $product], 200);
     }
 
-public function deleteProductById($id){
-    $product = Product::findOrFail($id);
-    $product->delete();
-    return response()->json(['message' => "Successfully delete product"]);
-}
+    public function getProductById($id)
+    {
+        $product = Product::findOrFail($id);
+        return response()->json($product);
+    }
+    private function handleFileUpload(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $fileObj = $request->file('image');
+            $name = $fileObj->getClientOriginalName();
+            $ext = $fileObj->getClientOriginalExtension();
+            $newFileName = $name . time() . '.' . $ext;
+            $fileObj->storeAs('public/images', $newFileName);
+            return $newFileName;
+        }
+        return null;
+    }
+    public function updateProduct(Request $request)
+    {
+        // print_r($request);
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'name' => 'required|string',
+            'sku' => 'required|string',
+            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:1000',
+            'cost' => 'required|numeric|min:1000',
+        ]);
+
+        if ($validator->fails()) {
+            $message = implode(" ", $validator->errors()->all());
+            return response()->json($message, 400);
+        }
+
+        $existingProduct = Product::findOrFail($request->id);
+
+
+        $existingProduct->update([
+            'name' => $request->name,
+            'sku' => $request->sku,
+            'stock' => $request->stock,
+            'price' => $request->price,
+            'cost' => $request->cost,
+            'image' => $this->handleFileUpload($request) ?: $existingProduct->image,
+            'updated_by' => $request->updatedBy,
+        ]);
+
+        return response()->json(['message' => 'Successfully update product', 'product' => $existingProduct], 200);
+    }
+
+
+    public function deleteProductById($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return response()->json(['message' => "Successfully delete product"]);
+    }
 }

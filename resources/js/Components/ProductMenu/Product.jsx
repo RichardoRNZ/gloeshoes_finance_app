@@ -1,12 +1,25 @@
-import { Inventory2 } from "@mui/icons-material";
-import { Breadcrumbs, Chip, Link, TextField, Typography } from "@mui/material";
+import { Inventory2, UploadFile } from "@mui/icons-material";
+import {
+    Breadcrumbs,
+    Button,
+    Chip,
+    IconButton,
+    Link,
+    TextField,
+    Typography,
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
+import { MuiFileInput } from "mui-file-input";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import Swal from "sweetalert2";
+import ConfirmModal from "../ConfirmModal";
 import Datatable from "../Datatable";
 import HeaderTableButton from "../HeaderTableButton";
-import AddProductForm from "./AddProductForm";
+import Loading from "../Loading";
+import ProductForm from "./ProductForm";
 
 const Product = (props) => {
     const [rows, setRows] = useState([]);
@@ -20,6 +33,8 @@ const Product = (props) => {
     const [showLoading, setShowLoading] = useState(false);
     const [rowId, setRowId] = useState(0);
     const [isUpdated, setIsUpdated] = useState(false);
+    const [isNew, setIsNew] = useState(true);
+    const [product, setProduct] = useState("");
     const columns = [
         { field: "no", headerName: "No", width: 70 },
         { field: "sku", headerName: "SKU", width: 150, editable: true },
@@ -62,7 +77,7 @@ const Product = (props) => {
         {
             field: "image",
             headerName: "Image",
-            width: 150,
+            width: 200,
             editable: true,
             renderCell: (params) => (
                 <img src={params.value} className="h-100 w-50" />
@@ -92,11 +107,55 @@ const Product = (props) => {
             setIsLoading(false);
         } catch (error) {}
     };
+    const getProductDetails = async (id) => {
+        try {
+            const response = await axios.get("/product/" + id);
+            setProduct(response.data);
+        } catch (error) {}
+    };
 
+    const handleEditClick = (id) => {
+        setIsNew(false);
+        getProductDetails(id);
+    };
+    const deleteProduct = async () => {
+        try {
+            const response = await axios.delete("/product/delete/" + rowId);
+
+            Swal.fire({
+                icon: "success",
+                title: response.data.message,
+                timer: 1500,
+            });
+            fetchProductsData();
+        } catch (error) {
+            Swal.fire({
+                title: "Oops",
+                text: error.response.data,
+                icon: "error",
+                timer: 1500,
+            });
+        }
+    };
+    const handleDeleteClick = async() => {
+        setShowLoading(true);
+        await deleteProduct();
+        setShowLoading(false);
+
+    }
     console.log("data", rows);
+    console.log("isNew", isNew);
+    console.log("product", product);
 
     return (
         <>
+         <ConfirmModal
+                id="deleteModal"
+                type="delete"
+                text="Are you sure want to delete?"
+                handleClick={() => handleDeleteClick()}
+            />
+            <Loading isLoading={showLoading}/>
             <div className="container">
                 <div className="mb-4">
                     <Breadcrumbs aria-label="breadcrumb">
@@ -112,7 +171,7 @@ const Product = (props) => {
                         </Typography>
                     </Breadcrumbs>
                 </div>
-                <img src='public/storage/images/70d1ce90b1d51bfdd8f56d4315be088b.png' alt='Gambar'/>
+
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-12">
                         <div className="card" style={{ width: "100%" }}>
@@ -125,7 +184,8 @@ const Product = (props) => {
                                     <HeaderTableButton
                                         isUpdated={isUpdated}
                                         addButton="#productModal"
-                                        typeAddButton="Add Product"
+                                        typeAddButton="product"
+                                        setIsNew={setIsNew}
                                     />
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">
@@ -150,14 +210,34 @@ const Product = (props) => {
                                         setPaginationModel={setPaginationModel}
                                         setRowId={setRowId}
                                         setIsUpdated={setIsUpdated}
+                                        type="product"
+                                        targetModal="#productModal"
+                                        handleEditClick={handleEditClick}
                                     />
+                                    {/* <DataGrid
+                                        columns={columns}
+                                        rows={rows}
+                                        paginationModel={paginationModel}
+                                        onPaginationModelChange={
+                                            setPaginationModel
+                                        }
+                                        paginationMode="server"
+                                        rowCount={rowCount}
+                                        loading={isLoading}
+                                    /> */}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <AddProductForm user={props.auth.user.username} />
+            <ProductForm
+                user={props.auth.user.username}
+                id={rowId}
+                isNew={isNew}
+                product={product}
+                fetchProductsData={fetchProductsData}
+            />
         </>
     );
 };

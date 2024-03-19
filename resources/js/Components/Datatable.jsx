@@ -83,57 +83,6 @@ const Datatable = (props) => {
     const [rowModesModel, setRowModesModel] = useState({});
     const [isEdit, setIsEdit] = useState(false);
 
-    const object = {
-        field: "actions",
-        type: "actions",
-        headerName: "Actions",
-        width: 100,
-        cellClassName: "actions",
-
-        getActions: ({ id }) => {
-            const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-            console.log("inEdit", isInEditMode);
-
-            if (isInEditMode) {
-                return [
-                    <GridActionsCellItem
-                        icon={<Save />}
-                        label="Save"
-                        sx={{
-                            color: "primary.main",
-                        }}
-                        onClick={handleSaveClick(id)}
-                    />,
-                    <GridActionsCellItem
-                        icon={<Cancel />}
-                        label="Cancel"
-                        className="textPrimary"
-                        onClick={handleCancelClick(id)}
-                        color="inherit"
-                    />,
-                ];
-            }
-
-            return [
-                <GridActionsCellItem
-                    icon={<Edit />}
-                    label="Edit"
-                    className="textPrimary"
-                    onClick={handleEditClick(id)}
-                    color="inherit"
-                />,
-                <GridActionsCellItem
-                    icon={<Delete />}
-                    label="Delete"
-                    onClick={() => {
-                        props.setRowId(id);
-                    }}
-                    color="inherit"
-                />,
-            ];
-        },
-    };
     const columns = useMemo(() => {
         const object = {
             field: "actions",
@@ -165,13 +114,17 @@ const Datatable = (props) => {
                         />,
                     ];
                 }
-
+                console.log(props)
                 return [
                     <GridActionsCellItem
                         icon={<Edit />}
                         label="Edit"
                         className="textPrimary"
-                        onClick={handleEditClick(id)}
+                        data-bs-toggle={props.type!=="product"?"":"modal"}
+                        data-bs-target={props.type!=="product"?"":props.targetModal}
+                        onClick={
+                            props.type !== "product" ? handleEditClick(id) : ()=>props.handleEditClick(id)
+                        }
                         color="inherit"
                     />,
                     <GridActionsCellItem

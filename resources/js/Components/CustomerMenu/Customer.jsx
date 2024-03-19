@@ -100,6 +100,7 @@ const Customer = (props) => {
     };
     const updateCustomerData = async () => {
         try {
+
             const response = await axios.put("/customers/update", rows);
             Swal.fire({
                 icon: "success",
@@ -185,6 +186,7 @@ const Customer = (props) => {
                                         setPaginationModel={setPaginationModel}
                                         setRowId={setRowId}
                                         setIsUpdated={setIsUpdated}
+                                        type="customer"
                                     />
                                 </div>
                             </div>

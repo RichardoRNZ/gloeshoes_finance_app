@@ -99,8 +99,12 @@ class CustomerController extends Controller
                 'address' => $customer['address'],
                 'instagram' => $customer['instagram'],
                 'phone_number' => $customer['phoneNumber'],
+                'updated_by' => auth()->user()->username,
             ]);
+
+
         }
+
         return response()->json(['message' => 'Successfully update customer', 'customers' =>$customers], 200);
 
     }
