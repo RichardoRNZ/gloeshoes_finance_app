@@ -11,11 +11,7 @@ use Illuminate\Support\Facades\Cookie;
 class AuthController extends Controller
 {
     //
-    public function loginIndex()
-    {
-        return Inertia::render('Login');
-    }
-    
+
     public function login(Request $request)
     {
         try {

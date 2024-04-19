@@ -48,6 +48,12 @@ class CustomerController extends Controller
         });
         return response()->json($customers);
     }
+
+    public function getAllCustomerData()
+    {
+        $customers = Customer::all();
+        return response()->json($customers);
+    }
     public function createCustomer(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -68,7 +74,7 @@ class CustomerController extends Controller
             'instagram' => $request->instagram,
             'phone_number' => "+62" . $request->phoneNumber,
             'created_by' => $request->createdBy,
-            'created_at' => Carbon::now()->timestamp,
+
         ];
         Customer::create($customers);
         return response()->json(['message' => 'Successfully add customer', 'customer' => $customers], 200);
@@ -105,7 +111,7 @@ class CustomerController extends Controller
 
         }
 
-        return response()->json(['message' => 'Successfully update customer', 'customers' =>$customers], 200);
+        return response()->json(['message' => 'Successfully update customer', 'customers' => $customers], 200);
 
     }
 

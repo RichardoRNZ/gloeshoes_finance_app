@@ -111,7 +111,7 @@ export default function Main(props) {
         "Dashboard",
         "Customers",
         "Products",
-        // "Orders",
+        "Orders",
         // "Reports",
         // "Vendors",
     ];
@@ -142,7 +142,7 @@ export default function Main(props) {
             <AppBar
                 position="fixed"
                 open={open}
-                style={{ backgroundColor: "#2B316A" }}
+                style={{ backgroundColor: "#243ab0" }}
             >
                 <Toolbar>
                     <IconButton
@@ -160,7 +160,7 @@ export default function Main(props) {
                     <Typography
                         variant="h6"
                         component="div"
-                        sx={{ flexGrow: 1 }}
+                        sx={{ flexGrow: 1, color: "#fdfdfd" }}
                     >
                         Gloeshoes
                     </Typography>
@@ -192,17 +192,17 @@ export default function Main(props) {
                 open={open}
                 PaperProps={{
                     sx: {
-                        backgroundColor: "#2B316A",
-                        color: "#ffff",
+                        backgroundColor: "#243ab0",
+                        color: "#fdfdfd",
                     },
                 }}
             >
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === "rtl" ? (
-                            <ChevronRightIcon sx={{ color: "#fff" }} />
+                            <ChevronRightIcon sx={{ color: "#fdfdfd" }} />
                         ) : (
-                            <ChevronLeftIcon sx={{ color: "#fff" }} />
+                            <ChevronLeftIcon sx={{ color: "#fdfdfd" }} />
                         )}
                     </IconButton>
                 </DrawerHeader>
@@ -232,7 +232,7 @@ export default function Main(props) {
                                             minWidth: 0,
                                             mr: open ? 3 : "auto",
                                             justifyContent: "center",
-                                            color: "#fff",
+                                            color: "#fdfdfd",
                                         }}
                                     >
                                         {renderMenuIcon(text)}

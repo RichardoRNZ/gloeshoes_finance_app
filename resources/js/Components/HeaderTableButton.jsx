@@ -30,23 +30,33 @@ const HeaderTableButton = (props) => {
                 </>
             ) : (
                 <>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        sx={{ marginRight: "10px" }}
-                    >
-                        <Download />
-                        Download
-                    </Button>
+                    {props.typeAddButton !== "order" ? (
+                        <Button
+                            variant="contained"
+                            color="success"
+                            sx={{ marginRight: "10px" }}
+                        >
+                            <Download />
+                            Download
+                        </Button>
+                    ) : (
+                        ""
+                    )}
                     <Button
                         variant="contained"
                         className="mr-4"
                         data-bs-toggle="modal"
                         data-bs-target={props.addButton}
-                        onClick={props.typeAddButton==="product"?()=>props.setIsNew(true):null}
+                        onClick={
+                            props.typeAddButton === "product"
+                                ? () => props.setIsNew(true)
+                                : props.typeAddButton === "order"
+                                ? ()=>props.handleClick()
+                                : null
+                        }
                     >
                         <Add />
-                        {"Add "+props.typeAddButton}
+                        {"Add " + props.typeAddButton}
                     </Button>
                 </>
             )}

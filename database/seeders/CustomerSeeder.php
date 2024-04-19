@@ -25,7 +25,7 @@ class CustomerSeeder extends Seeder
             'created_by' => 'system',
 
         ]);
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             DB::table('customers')->insert([
                 'name' => 'Richardo',
                 'address' => 'Jln Barat 3 No 126, Jakarta Barat, Indonesia',

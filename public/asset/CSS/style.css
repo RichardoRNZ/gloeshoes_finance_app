@@ -3,23 +3,32 @@
     font-family: 'Roboto', sans-serif;
 }
 body{
-    background-color: #EAEBF2 !important;
+    background-color: #f8fafd !important;
 }
 input, textarea {
     --tw-ring-shadow: 0 0 #000 !important;
   }
 .card-title{
     font-weight: 600;
-    color: #2B316A;
+    color: #1c1ea9;
 }
 #nprogress{
     display: none;
+}
+.css-1anqmj6-MuiPopper-root-MuiPickersPopper-root{
+    z-index: 1400 !important;;
+}
+.css-10nakn3-MuiModal-root-MuiPopover-root-MuiMenu-root{
+    z-index: 1400 !important;;
 }
 .modal{
     z-index: 1350 !important;;
 }
 .modal-backdrop{
     z-index: 1300 !important;
+}
+.card{
+    background-color: #fdfdfd !important;
 }
 /* Error Page */
 #notfound {
@@ -125,13 +134,13 @@ input, textarea {
 
   /* Login */
 .login-card .card-title{
-    color: #2B316A;
+    color: #1c1ea9;
     font-size: 2em;
     font-weight: 500;
 
 }
 .login-card .btn-login{
-    background-color: #2B316A;
+    background-color: #243ab0;
    text-align: center;
 }
 .input-label-error{
@@ -150,6 +159,20 @@ input, textarea {
     animation: typewriter 4s steps(44) 1s 1 normal both,
       blinkTextCursor 500ms infinite;
   }
+  .detail-title{
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 80%;
+    color: #4b5bc1;
+    margin-bottom: 10px;
+}
+.detail-text{
+    font-size: 16px;
+    color: #121422;
+    font-weight: 500;
+    opacity: 90%;
+
+}
 
   @keyframes typewriter {
     from {
@@ -167,11 +190,6 @@ input, textarea {
       border-right-color: transparent;
     }
   }
-
-  /* Customers */
-
-
-
 
   @media (max-width: 768px) {
     .welcome-text{
@@ -192,6 +210,8 @@ input, textarea {
         margin-bottom: 20px;
         width: 100%;
     } */
+    /* Order Detail Page */
+
     .form-group .row{
         flex-direction: column;
     }
@@ -209,4 +229,5 @@ input, textarea {
         min-width: 100%;
     }
   }
+
 

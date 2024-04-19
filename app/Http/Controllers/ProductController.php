@@ -10,11 +10,6 @@ use Inertia\Inertia;
 class productController extends Controller
 {
 
-    public function index()
-    {
-
-        return Inertia::render('Home');
-    }
 
     private function getStatusOfStock($stock)
     {
@@ -58,6 +53,12 @@ class productController extends Controller
         return response()->json($products);
     }
 
+    public function getAllProductsData()
+    {
+        $products = Product::all();
+        return response()->json($products);
+    }
+
     public function createNewProduct(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -66,7 +67,7 @@ class productController extends Controller
             'stock' => 'required|numeric',
             'price' => 'required|numeric|min:1000',
             'cost' => 'required|numeric|min:1000',
-            'image' => 'required',
+            'image' => 'required|image',
         ]);
 
         if ($validator->fails()) {
@@ -110,9 +111,10 @@ class productController extends Controller
             'id' => 'required|integer',
             'name' => 'required|string',
             'sku' => 'required|string',
-            'stock' => 'required|numeric',
+            'stock' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:1000',
             'cost' => 'required|numeric|min:1000',
+            'image' => 'image'
         ]);
 
         if ($validator->fails()) {

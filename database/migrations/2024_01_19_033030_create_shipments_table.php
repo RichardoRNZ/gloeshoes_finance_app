@@ -13,12 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('shipments', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_amount');
-            $table->string('status');
-            $table->string('transfer_receipt');
-            $table->foreignId('header_id')->constrained('header_transactions','id');
+            $table->string('name');
+            $table->Integer('price');
+            $table->String('receipt_number');
+            $table->text('shipping_address');
+            $table->foreignId('transaction_id')->constrained('transactions','id');
+            $table->string('created_by');
+            $table->string('updated_by')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('shipments');
     }
 };

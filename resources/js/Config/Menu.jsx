@@ -1,6 +1,8 @@
-import Customer from "@/Components/CustomerMenu/Customer";
+import Customer from "@/Components/CustomerMenu/CustomerList";
 import Dashboard from "@/Components/Dashboard";
-import Product from "@/Components/ProductMenu/Product";
+import OrderDetail from "@/Components/OrderMenu/OrderDetail";
+import OrderList from "@/Components/OrderMenu/OrderList";
+import Product from "@/Components/ProductMenu/ProductList";
 
 import { BarChart, Construction, Groups, Home, Inventory2, Receipt } from "@mui/icons-material";
 
@@ -24,6 +26,9 @@ export const renderMenuIcon = (menu) => {
 };
 
 export const sidebarMenuRouter = (menuUrl, props) => {
+    if (menuUrl.includes("/order/detail-page/")) {
+        return <OrderDetail {...props} />;
+    }
     switch (menuUrl) {
         case "/dashboard":
             return <Dashboard />;
@@ -31,8 +36,8 @@ export const sidebarMenuRouter = (menuUrl, props) => {
             return <Customer {...props}/>;
         case "/product":
             return <Product {...props}/>;
-        // case "Orders":
-        //     return <Receipt />;
+        case "/orders":
+            return <OrderList {...props}/>;
         // case "Reports":
         //     return <BarChart />;
         // case "Vendors":

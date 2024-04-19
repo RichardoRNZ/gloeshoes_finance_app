@@ -1,9 +1,10 @@
-import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
+import { Cancel, Delete, Edit, RemoveRedEye, Save } from "@mui/icons-material";
 import { Box, TextField } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import React, { useState, useMemo } from "react";
 import { styled } from "@mui/material/styles";
 import ConfirmModal from "./ConfirmModal";
+import { isNull } from "lodash";
 
 const StyledGridOverlay = styled("div")(({ theme }) => ({
     display: "flex",
@@ -114,19 +115,48 @@ const Datatable = (props) => {
                         />,
                     ];
                 }
-                console.log(props)
+                if (props.type === "order") {
+                    return [
+                        <GridActionsCellItem
+                            icon={<RemoveRedEye />}
+                            label="View Detail"
+                            className="textPrimary"
+                            onClick={() => props.handleDetailClick(id)}
+                        />,
+                        <GridActionsCellItem
+                            icon={<Delete />}
+                            label="Delete"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal"
+                            color="inherit"
+                            onClick={() => props.setRowId(id)}
+                        />,
+                    ];
+                }
                 return [
-                    <GridActionsCellItem
-                        icon={<Edit />}
-                        label="Edit"
-                        className="textPrimary"
-                        data-bs-toggle={props.type!=="product"?"":"modal"}
-                        data-bs-target={props.type!=="product"?"":props.targetModal}
-                        onClick={
-                            props.type !== "product" ? handleEditClick(id) : ()=>props.handleEditClick(id)
-                        }
-                        color="inherit"
-                    />,
+                    props.type !== "payment" ? (
+                        <GridActionsCellItem
+                            icon={<Edit />}
+                            label="Edit"
+                            className="textPrimary"
+                            data-bs-toggle={
+                                props.type !== "product" && props.type !== "orderProduct" ? "" : "modal"
+                            }
+                            data-bs-target={
+                                props.type !== "product" && props.type !== "orderProduct"
+                                    ? ""
+                                    : props.targetModal
+                            }
+                            onClick={
+                                props.type !== "product" &&  props.type !== "orderProduct"
+                                    ? handleEditClick(id)
+                                    : () => props.handleEditClick(id)
+                            }
+                            color="inherit"
+                        />
+                    ) : (
+                        <></>
+                    ),
                     <GridActionsCellItem
                         icon={<Delete />}
                         label="Delete"
@@ -139,7 +169,11 @@ const Datatable = (props) => {
             },
         };
 
-        return [...props.columns, object];
+        const updatedColumns =
+            props.isStatusValid === undefined || props.isStatusValid
+                ? [...props.columns, object]
+                : [...props.columns];
+        return updatedColumns;
     }, [props.columns, rowModesModel]);
 
     const handleRowEditStop = (params, event) => {
@@ -189,7 +223,6 @@ const Datatable = (props) => {
         setRowModesModel(newRowModesModel);
     };
 
-    console.log(props);
     return (
         <>
             <div style={{ height: 400, width: "100%" }}>
@@ -223,6 +256,9 @@ const Datatable = (props) => {
                     rowCount={props.rowCount}
                     paginationModel={props.paginationModel}
                     onPaginationModelChange={props.setPaginationModel}
+                    hideFooterPagination={
+                        props.type === "orderProduct" || props.type === "payment" ? true : false
+                    }
                 />
             </div>
         </>

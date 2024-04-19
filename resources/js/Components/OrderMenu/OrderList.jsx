@@ -1,16 +1,8 @@
-import { Inventory2, UploadFile } from "@mui/icons-material";
-import {
-    Breadcrumbs,
-    Button,
-    Chip,
-    IconButton,
-    Link,
-    TextField,
-    Typography,
-} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Inertia } from "@inertiajs/inertia";
+import { Receipt } from "@mui/icons-material";
+import { Breadcrumbs, Chip, Link, TextField, Typography } from "@mui/material";
 import axios from "axios";
-import { MuiFileInput } from "mui-file-input";
+import dayjs from "dayjs";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -19,9 +11,9 @@ import ConfirmModal from "../ConfirmModal";
 import Datatable from "../Datatable";
 import HeaderTableButton from "../HeaderTableButton";
 import Loading from "../Loading";
-import ProductForm from "./ProductForm";
+import OrderForm from "./OrderForm";
 
-const Product = (props) => {
+const OrderList = (props) => {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [rowCount, setRowCount] = useState(0);
@@ -33,41 +25,31 @@ const Product = (props) => {
     const [showLoading, setShowLoading] = useState(false);
     const [rowId, setRowId] = useState(0);
     const [isUpdated, setIsUpdated] = useState(false);
-    const [isNew, setIsNew] = useState(true);
-    const [product, setProduct] = useState("");
+    const [customers, setCustomers] = useState([]);
+    const [products, setProducts] = useState([]);
     const columns = [
         { field: "no", headerName: "No", width: 70 },
-        { field: "sku", headerName: "SKU", width: 150, editable: true },
         {
-            field: "name",
-            headerName: "Product Name",
-            width: 150,
-            editable: true,
+            field: "orderNumber",
+            headerName: "Order ID",
+            width: 200,
         },
         {
-            field: "price",
-            headerName: "Price",
-            width: 100,
-            editable: true,
+            field: "customerName",
+            headerName: "Customer Name",
+            width: 150,
         },
         {
-            field: "cost",
-            headerName: "Cost of Good Sold",
-            width: 150,
-            editable: true,
-        },
-        { field: "stock", headerName: "Stock", width: 80, editable: true },
-        {
-            field: "status",
-            headerName: "Status",
-            width: 150,
+            field: "paymentStatus",
+            headerName: "Payment Status",
+            width: 130,
             renderCell: (params) => (
                 <Chip
                     color={
-                        params.value === "Out of stock"
+                        params.value.toLowerCase() === "not paid"
                             ? "error"
-                            : params.value === "Low stock"
-                            ? "warning"
+                            : params.value === "not yet paid off"
+                            ? "secondary"
                             : "success"
                     }
                     label={params.value.toUpperCase()}
@@ -75,27 +57,47 @@ const Product = (props) => {
             ),
         },
         {
-            field: "image",
-            headerName: "Image",
-            width: 200,
-            editable: true,
+            field: "orderDate",
+            headerName: "Order Date",
+            width: 150,
+            valueFormatter: (params) =>
+                dayjs(params?.value).format("DD MMMM YYYY"),
+        },
+        {
+            field: "orderStatus",
+            headerName: "Order Status",
+            width: 150,
             renderCell: (params) => (
-                <img src={params.value} className="h-100 w-50" />
+                <Chip
+                    color={
+                        params.value.toLowerCase() === "created"
+                            ? "warning"
+                            : params.value.toLowerCase() === "on progress"
+                            ? "secondary"
+                            : params.value.toLowerCase() === "on delivery"
+                            ? "primary"
+                            : "success"
+                    }
+                    label={params.value.toUpperCase()}
+                />
             ),
         },
+        {
+            field: "totalPrice",
+            headerName: "Total Price",
+            width: 150,
+        },
     ];
-
     useEffect(() => {
-        fetchProductsData();
+        fetchOrdersData();
     }, [props.ziggy.location, paginationModel, search]);
-
-    const fetchProductsData = async (
+    const fetchOrdersData = async (
         page = paginationModel.page + 1,
         size = paginationModel.pageSize
     ) => {
         try {
             setIsLoading(true);
-            const response = await axios.get("/product/all", {
+            const response = await axios.get("/order", {
                 params: {
                     perPage: size,
                     page: page,
@@ -107,27 +109,41 @@ const Product = (props) => {
             setIsLoading(false);
         } catch (error) {}
     };
-    const getProductDetails = async (id) => {
+    const getAllCustomers = async () => {
         try {
-            const response = await axios.get("/product/" + id);
-            setProduct(response.data);
+            const response = await axios.get("/customers/data");
+            setCustomers(response.data);
         } catch (error) {}
     };
-
-    const handleEditClick = (id) => {
-        setIsNew(false);
-        getProductDetails(id);
-    };
-    const deleteProduct = async () => {
+    const getAllProducts = async () => {
         try {
-            const response = await axios.delete("/product/delete/" + rowId);
+            const response = await axios.get("/products/data");
+            setProducts(response.data);
+        } catch (error) {}
+    };
+    const handleAddClick = () => {
+        if (customers.length === 0) {
+            getAllCustomers();
+        }
+        if (products.length === 0) {
+            getAllProducts();
+        }
+    };
 
+    const handleDetailClick = (id) => {
+        Inertia.visit(route("detail_page", id));
+    };
+    const handleDeleteClick = async () => {
+        try {
+            setShowLoading(true);
+            const response = await axios.delete("/order/delete/" + rowId);
             Swal.fire({
                 icon: "success",
                 title: response.data.message,
                 timer: 1500,
             });
-            fetchProductsData();
+            fetchOrdersData();
+            setShowLoading(false);
         } catch (error) {
             Swal.fire({
                 title: "Oops",
@@ -135,57 +151,43 @@ const Product = (props) => {
                 icon: "error",
                 timer: 1500,
             });
+            setIsLoading(false);
         }
     };
-    const handleDeleteClick = async() => {
-        setShowLoading(true);
-        await deleteProduct();
-        setShowLoading(false);
 
-    }
-    console.log("data", rows);
-    console.log("isNew", isNew);
-    console.log("product", product);
-
+    console.log(customers);
     return (
         <>
-         <ConfirmModal
-                id="deleteModal"
-                type="delete"
-                text="Are you sure want to delete?"
-                handleClick={() => handleDeleteClick()}
-            />
-            <Loading isLoading={showLoading}/>
+        <Loading isLoading={showLoading}/>
             <div className="container">
                 <div className="mb-4">
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link
                             underline="none"
-                            color="#2B316A"
+                            color="#243ab0"
                             href={route("dashboard")}
                         >
                             Home
                         </Link>
-                        <Typography color="#2B316A" sx={{ fontWeight: "600" }}>
-                            Products
+                        <Typography color="#243ab0" sx={{ fontWeight: "600" }}>
+                            Orders
                         </Typography>
                     </Breadcrumbs>
                 </div>
-
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-12">
                         <div className="card" style={{ width: "100%" }}>
                             <div className="card-body">
                                 <h5 className="card-title">
-                                    <Inventory2 /> Product List
+                                    <Receipt /> Order List
                                 </h5>
 
                                 <div className="d-flex justify-content-end button-group mb-4">
                                     <HeaderTableButton
                                         isUpdated={isUpdated}
-                                        addButton="#productModal"
-                                        typeAddButton="product"
-                                        setIsNew={setIsNew}
+                                        addButton="#orderModal"
+                                        typeAddButton="order"
+                                        handleClick={handleAddClick}
                                     />
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">
@@ -210,36 +212,29 @@ const Product = (props) => {
                                         setPaginationModel={setPaginationModel}
                                         setRowId={setRowId}
                                         setIsUpdated={setIsUpdated}
-                                        type="product"
-                                        targetModal="#productModal"
-                                        handleEditClick={handleEditClick}
+                                        type="order"
+                                        handleDetailClick={handleDetailClick}
                                     />
-                                    {/* <DataGrid
-                                        columns={columns}
-                                        rows={rows}
-                                        paginationModel={paginationModel}
-                                        onPaginationModelChange={
-                                            setPaginationModel
-                                        }
-                                        paginationMode="server"
-                                        rowCount={rowCount}
-                                        loading={isLoading}
-                                    /> */}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <ProductForm
+            <OrderForm
+                customers={customers}
+                products={products}
                 user={props.auth.user.username}
-                id={rowId}
-                isNew={isNew}
-                product={product}
-                fetchProductsData={fetchProductsData}
+                fetchOrdersData={fetchOrdersData}
+            />
+            <ConfirmModal
+                id="deleteModal"
+                type="delete"
+                text="Are you sure want to delete this order, the order data will be removed?"
+                handleClick={() => handleDeleteClick()}
             />
         </>
     );
 };
 
-export default Product;
+export default OrderList;

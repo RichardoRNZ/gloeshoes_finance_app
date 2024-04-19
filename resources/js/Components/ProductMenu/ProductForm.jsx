@@ -55,6 +55,7 @@ const AddProductForm = (props) => {
             setIsLoading(false);
             props.fetchProductsData();
         } catch (error) {
+            setIsLoading(false);
             Swal.fire({
                 title: "Oops",
                 text: error.response.data,
@@ -85,6 +86,7 @@ const AddProductForm = (props) => {
             setIsLoading(false);
             props.fetchProductsData();
         } catch (error) {
+            setIsLoading(false);
             Swal.fire({
                 title: "Oops",
                 text: error.response.data,
@@ -150,6 +152,7 @@ const AddProductForm = (props) => {
                                                 className="w-100 mb-4"
                                                 value={formData.sku}
                                                 name="sku"
+                                                InputLabelProps={props.isNew?{ shrink: true }:""}
                                                 onChange={(e) =>
                                                     handleChange(e)
                                                 }
@@ -169,6 +172,7 @@ const AddProductForm = (props) => {
                                                 variant="outlined"
                                                 className="w-100"
                                                 value={formData.name}
+                                                InputLabelProps={{ shrink: true }}
                                                 name="name"
                                                 onChange={(e) =>
                                                     handleChange(e)
@@ -190,6 +194,7 @@ const AddProductForm = (props) => {
                                                 className="w-100 mb-4"
                                                 type="number"
                                                 value={formData.stock}
+                                                InputLabelProps={{ shrink: true }}
                                                 name="stock"
                                                 onChange={(e) =>
                                                     handleChange(e)
@@ -213,6 +218,7 @@ const AddProductForm = (props) => {
                                                 variant="outlined"
                                                 className="w-100"
                                                 value={formData.cost}
+                                                InputLabelProps={{ shrink: true }}
                                                 name="cost"
                                                 onChange={(e) =>
                                                     handleChange(e)
@@ -232,6 +238,7 @@ const AddProductForm = (props) => {
                                                 }
                                                 variant="outlined"
                                                 className="w-100"
+                                                InputLabelProps={{ shrink: true }}
                                                 type="number"
                                                 value={formData.price}
                                                 name="price"
@@ -245,6 +252,7 @@ const AddProductForm = (props) => {
                                         <div className="col col-lg-12 mt-4">
                                             <MuiFileInput
                                                 className="w-100"
+                                                InputLabelProps={{ shrink: true }}
                                                 label={
                                                     <span>
                                                         Image

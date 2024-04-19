@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import Loading from "../Loading";
 import ConfirmModal from "../ConfirmModal";
 import HeaderTableButton from "../HeaderTableButton";
-import Product from "../ProductMenu/Product";
+import Product from "../ProductMenu/ProductList";
 
 const Customer = (props) => {
     const columns = [
@@ -143,12 +143,12 @@ const Customer = (props) => {
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link
                             underline="none"
-                            color="#2B316A"
+                            color="#243ab0"
                             href={route("dashboard")}
                         >
                             Home
                         </Link>
-                        <Typography color="#2B316A" sx={{ fontWeight: "600" }}>
+                        <Typography color="#243ab0" sx={{ fontWeight: "600" }}>
                             Customers
                         </Typography>
                     </Breadcrumbs>
@@ -162,7 +162,7 @@ const Customer = (props) => {
                                 </h5>
 
                                 <div className="d-flex justify-content-end button-group mb-4">
-                                   <HeaderTableButton isUpdated={isUpdated} addButton="#customerModal" typeAddButton="Add Customer"/>
+                                   <HeaderTableButton isUpdated={isUpdated} addButton="#customerModal" typeAddButton="customer"/>
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">
                                     <TextField
