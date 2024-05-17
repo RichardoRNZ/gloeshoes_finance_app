@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CustomersExport;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {
@@ -28,7 +30,8 @@ class CustomerController extends Controller
             $query->where('name', 'like', "%$searchTerm%")
                 ->orWhere('email', 'like', "%$searchTerm%")
                 ->orWhere('address', 'like', "%$searchTerm%")
-                ->orWhere('instagram', 'like', "%$searchTerm%");
+                ->orWhere('instagram', 'like', "%$searchTerm%")
+                ->orderBy('id','desc');
         }
         $customers = $query->paginate($perPage, ['*'], 'page', $page);
 
@@ -120,6 +123,9 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->delete();
         return response()->json(['message' => 'Successfully delete customer'], 200);
+    }
+    public function exportCustomersData(){
+        return Excel::download(new CustomersExport, 'customers.xlsx');
     }
 
 }

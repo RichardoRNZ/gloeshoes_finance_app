@@ -35,7 +35,7 @@ class PaymentController extends Controller
         $validator = Validator::make($request->all(), [
             'paymentAmount'=>'required|numeric|min:1000',
             'description' => 'required',
-            'transferReceipt' => 'required|image',
+            'transferReceipt' => 'image',
             'paymentDate' => 'required'
 
         ]);

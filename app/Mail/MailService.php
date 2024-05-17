@@ -27,7 +27,8 @@ class MailService extends Mailable
     private $remaining;
     private $paymentStatus;
     private $items;
-    public function __construct($customerName, $shippingPrice, $address, $orderId, $total, $paid, $remaining, $paymentStatus, $items)
+    private $isEmail;
+    public function __construct($customerName, $shippingPrice, $address, $orderId, $total, $paid, $remaining, $paymentStatus, $items, $isEmail)
     {
         $this->customerName = $customerName;
         $this->address = $address;
@@ -38,6 +39,7 @@ class MailService extends Mailable
         $this->remaining = $remaining;
         $this->paymentStatus = $paymentStatus;
         $this->items = $items;
+        $this->isEmail = $isEmail;
 
     }
 
@@ -61,7 +63,8 @@ class MailService extends Mailable
                 'paymentStatus' => $this->paymentStatus,
                 'items' => $this->items,
                 'shippingPrice' => $this->shippingPrice,
-                'paid' => $this->paid
+                'paid' => $this->paid,
+                'isEmail' => $this->isEmail,
 
             ],
         );

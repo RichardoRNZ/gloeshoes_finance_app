@@ -25,9 +25,6 @@ class Transaction extends Model
         return $this->hasMany(DetailTransaction::class,'transaction_id','id');
     }
 
-    public function payment(){
-        return $this->hasMany(Payment::class,'transaction_id','id');
-    }
 
     public function shipment(){
         return $this->hasOne(Shipment::class,'transaction_id','id');

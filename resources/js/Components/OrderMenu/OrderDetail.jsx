@@ -14,6 +14,7 @@ import {
     Typography,
 } from "@mui/material";
 import axios from "axios";
+import FileSaver from "file-saver";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -188,7 +189,12 @@ const OrderDetail = (props) => {
     const sendInvoice = async () => {
         try {
             setShowLoading(true);
-            const response = await axios.get("/order/invoice/$1/send".replace("$1",props.data.original.header_transaction.id));
+            const response = await axios.get(
+                "/order/invoice/$1/send".replace(
+                    "$1",
+                    props.data.original.header_transaction.id
+                )
+            );
             setShowLoading(false);
             Swal.fire({
                 icon: "success",
@@ -204,6 +210,24 @@ const OrderDetail = (props) => {
             });
             setShowLoading(false);
         }
+    };
+    const downloadInvoice = async () => {
+        try {
+            const response = await axios.get(
+                "/order/invoice/$1/download".replace(
+                    "$1",
+                    props.data.original.header_transaction.id
+                ),
+                { responseType: "blob" }
+            );
+
+            const blob = new Blob([response.data], { type: "application/pdf" });
+
+            FileSaver.saveAs(
+                blob,
+                "invoice_" + props.data.original.order_number + ".pdf"
+            );
+        } catch (error) {}
     };
     console.log(props);
     console.log(customers);
@@ -240,7 +264,7 @@ const OrderDetail = (props) => {
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-8">
                         <div
-                            className="card"
+                            className="card shadow-sm"
                             style={{ width: "100%", minHeight: "360px" }}
                         >
                             <div className="card-body">
@@ -251,6 +275,7 @@ const OrderDetail = (props) => {
                                         user={props.auth.user.username}
                                         isStatusValid={isStatusValid}
                                         sendInvoice={sendInvoice}
+                                        downloadInvoice={downloadInvoice}
                                     />
                                 </div>
                             </div>
@@ -258,7 +283,7 @@ const OrderDetail = (props) => {
                     </div>
                     <div className="col-lg-4">
                         <div
-                            className="card"
+                            className="card shadow-sm"
                             style={{ width: "100%", minHeight: "360px" }}
                         >
                             <div className="card-body">
@@ -412,7 +437,7 @@ const OrderDetail = (props) => {
                         </div>
                     </div>
                     <div className="col-lg-12 mt-4">
-                        <div className="card" style={{ width: "100%" }}>
+                        <div className="card shadow-sm" style={{ width: "100%" }}>
                             <div className="card-body">
                                 <h5 className="card-title">Product Detail</h5>
                                 <div className="d-flex justify-content-end button-group mb-4">

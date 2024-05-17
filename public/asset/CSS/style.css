@@ -174,12 +174,41 @@ input, textarea {
 
 }
 
+/* dashboard */
+.dashboard-summary .card{
+    width: 17rem;
+    height: 8rem;
+
+
+}
+.card-icon{
+    position: absolute;
+    z-index: 0;
+    top: 25px;
+    right: 6px;
+    font-size: 50px;
+
+}
+.dashboard-summary .card .card-subtitle{
+    font-size: 14px;
+    font-weight: 400;
+
+
+}
+.dashboard-summary .card .card-title{
+    font-size: 20px;
+    font-weight: 600;
+
+
+}
+
+
   @keyframes typewriter {
     from {
       width: 0;
     }
     to {
-      width: 130px;
+      width: 50px;
     }
   }
   @keyframes blinkTextCursor {

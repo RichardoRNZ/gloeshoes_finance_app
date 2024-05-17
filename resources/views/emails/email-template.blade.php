@@ -170,34 +170,22 @@
                 height: 120px !important;
             }
 
-            .social-icons {
-                float: none !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-                width: 220px !important;
-                max-width: 220px !important;
-                min-width: 220px !important;
-                background: #f1f1f1 !important;
-            }
-
-            .social-icons td {
-                width: auto !important;
-                min-width: 1% !important;
-                margin: 0 !important;
-                float: none !important;
-                text-align: center;
-            }
-
-            .social-icons td a {
-                width: auto !important;
-                max-width: 100% !important;
-                font-size: 10px !important;
-            }
 
             .table-container .logo-footer {
                 width: 129px !important;
                 height: 29px !important;
                 margin-bottom: 20px !important;
+            }
+
+            .logo {
+                width: 100px;
+                height: 60px;
+                margin-bottom: 10px;
+                margin-top: 10px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+
             }
 
             .block-img {
@@ -272,7 +260,21 @@
                                                                         <table cellpadding="0" cellspacing="0"
                                                                             border="0" align="center"
                                                                             role="presentation">
+                                                                            {{-- <tr>
+                                                                                <td align="center">
+                                                                                    <img src="data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path('asset/image/Gloeshoes 2.png'))) }}"
+                                                                                        alt="" class="logo"
+                                                                                        style="width: 100%;
+                                                                                    height: 100px;
+                                                                                    margin-bottom: 10px;
+                                                                                    margin-top: 10px;
+                                                                                    margin-left: auto;
+                                                                                    margin-right: auto;
+                                                                                    display: block;">
+                                                                                </td>
+                                                                            </tr> --}}
                                                                             <tr>
+
                                                                                 <td align="center">
                                                                                     <h1
                                                                                         style="color: #f1f1f1;font-weight: 600 !important;">
@@ -280,16 +282,7 @@
                                                                                 </td>
                                                                             </tr>
                                                                         </table>
-                                                                        <table cellpadding="0" cellspacing="0"
-                                                                            border="0" align="center" width="640"
-                                                                            style="width: 640px; min-width: 640px;"
-                                                                            role="presentation" bgcolor="#4f48e0">
-                                                                            <tr>
-                                                                                <td height="35"
-                                                                                    style="line-height:35px;min-height:35px;">
-                                                                                </td>
-                                                                            </tr>
-                                                                        </table>
+
                                                                     </td>
                                                                 </tr>
                                                             </table>
@@ -318,7 +311,7 @@
                                     <tbody>
                                         <tr>
                                             <td align="center"
-                                                style="color:#45535C;padding:20px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:800;font-size:34px;-webkit-font-smoothing:antialiased;line-height:1.2;"
+                                                style="color:#45535C;padding:20px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:700;font-size:30px;-webkit-font-smoothing:antialiased;line-height:1.2;"
                                                 class="table-container mobile-title">
                                                 Terima Kasih Telah Memesan Produk Kami!
                                             </td>
@@ -385,11 +378,11 @@
                                                             </td>
                                                             <td bgcolor="#FFFFFF" align="left"
                                                                 style="color:#5a5a5a;padding:10px 40px 10px 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:normal;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;">
-                                                                {{$item->product->name}} ({{$item->quantity}}x)
+                                                                {{ $item->product->name }} ({{ $item->quantity }}x)
                                                             </td>
                                                             <td bgcolor="#FFFFFF" align="right"
                                                                 style="color:#5a5a5a;padding:10px 40px 10px 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:bold;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;">
-                                                                Rp. {{$item->product->price*$item->quantity}}
+                                                                Rp. {{ $item->product->price * $item->quantity }}
                                                             </td>
                                                             <td bgcolor="#FFF" width="40" align="left"
                                                                 style="color:#5a5a5a;padding:10px 0 10px 0;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:bold;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;">
@@ -513,10 +506,12 @@
                                                                 {{ $address }}
                                                             </td>
                                                         </tr>
+
                                                     </tbody>
                                                 </table>
                                                 <table cellpadding="0" cellspacing="0" border="0" align="right"
-                                                    width="270" role="presentation" class="table-container">
+                                                    width={{ $isEmail ? '270' : '700' }} role="presentation"
+                                                    class="table-container">
                                                     <tbody>
                                                         <tr>
                                                             <td height="20"

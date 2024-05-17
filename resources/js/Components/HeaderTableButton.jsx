@@ -35,6 +35,7 @@ const HeaderTableButton = (props) => {
                             variant="contained"
                             color="success"
                             sx={{ marginRight: "10px" }}
+                            onClick={()=>props.download()}
                         >
                             <Download />
                             Download

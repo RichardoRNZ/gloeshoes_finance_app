@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -34,6 +35,22 @@ class AuthController extends Controller
         }
 
 
+    }
+    public function changeUserData(Request $request){
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required|min:8',
+
+        ]);
+        if ($validator->fails()) {
+            $message = implode(" ", $validator->errors()->all());
+            return response()->json($message, 400);
+        }
+        $user = Auth::user();
+        $user->username = $request->username;
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return response()->json(['message' => "Successfully change user data"], 200);
     }
 
     public function logout(){

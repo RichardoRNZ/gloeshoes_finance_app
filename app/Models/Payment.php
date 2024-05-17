@@ -20,9 +20,7 @@ class Payment extends Model
         'updated_by',
     ];
 
-    public function transaction(){
-        return $this->belongsTo(Transaction::class, 'transaction_id');
-    }
+
 
     public function headerPayment(){
         return $this->belongsTo(HeaderPayment::class, 'header_id');

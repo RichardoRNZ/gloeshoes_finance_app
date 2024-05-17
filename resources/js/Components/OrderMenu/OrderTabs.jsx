@@ -113,6 +113,9 @@ export default function OrderTabs(props) {
                         variant="contained"
                         color="secondary"
                         sx={{ marginRight: "10px" }}
+                        onClick={() => {
+                            props.downloadInvoice();
+                        }}
                     >
                         Print Invoice
                     </Button>

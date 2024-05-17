@@ -14,6 +14,7 @@ import Loading from "../Loading";
 import ConfirmModal from "../ConfirmModal";
 import HeaderTableButton from "../HeaderTableButton";
 import Product from "../ProductMenu/ProductList";
+import FileSaver from "file-saver";
 
 const Customer = (props) => {
     const columns = [
@@ -98,6 +99,15 @@ const Customer = (props) => {
         setRowId(0);
         setShowLoading(false);
     };
+    const downloadCustomersData = async ()=>{
+        try {
+            const response = await axios.get("/customers/export",{responseType : "blob"});
+            const blob = new Blob([response.data], {type :"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            FileSaver.saveAs(blob,"customers.xlsx");
+        } catch (error) {
+
+        }
+    };
     const updateCustomerData = async () => {
         try {
 
@@ -155,14 +165,14 @@ const Customer = (props) => {
                 </div>
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-12">
-                        <div className="card" style={{ width: "100%" }}>
+                        <div className="card shadow-sm" style={{ width: "100%" }}>
                             <div className="card-body">
                                 <h5 className="card-title">
                                     <Group /> Customer List
                                 </h5>
 
                                 <div className="d-flex justify-content-end button-group mb-4">
-                                   <HeaderTableButton isUpdated={isUpdated} addButton="#customerModal" typeAddButton="customer"/>
+                                   <HeaderTableButton isUpdated={isUpdated} addButton="#customerModal" typeAddButton="customer" download={downloadCustomersData}/>
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">
                                     <TextField

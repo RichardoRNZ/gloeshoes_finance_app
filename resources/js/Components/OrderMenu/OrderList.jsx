@@ -1,8 +1,16 @@
 import { Inertia } from "@inertiajs/inertia";
 import { Receipt } from "@mui/icons-material";
-import { Breadcrumbs, Chip, Link, TextField, Typography } from "@mui/material";
+import {
+    Breadcrumbs,
+    Button,
+    Chip,
+    Link,
+    TextField,
+    Typography,
+} from "@mui/material";
 import axios from "axios";
 import dayjs from "dayjs";
+import FileSaver from "file-saver";
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -27,6 +35,8 @@ const OrderList = (props) => {
     const [isUpdated, setIsUpdated] = useState(false);
     const [customers, setCustomers] = useState([]);
     const [products, setProducts] = useState([]);
+
+    const [selectionModel, setSelectionModel] = useState([]);
     const columns = [
         { field: "no", headerName: "No", width: 70 },
         {
@@ -154,11 +164,25 @@ const OrderList = (props) => {
             setIsLoading(false);
         }
     };
+    const handleOrderVendorFormDownload = async () => {
+        const params = { transactionIds: selectionModel };
+        try {
+            const response = await axios.post("/order/vendor/download", params, {
+                responseType: "blob",
+            });
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const fileName = response.headers
+                .get("content-disposition")
+                .split('"')[1];
+            FileSaver.saveAs(blob, fileName);
+        } catch (error) {}
+    };
 
     console.log(customers);
+    console.log("checkedData", selectionModel);
     return (
         <>
-        <Loading isLoading={showLoading}/>
+            <Loading isLoading={showLoading} />
             <div className="container">
                 <div className="mb-4">
                     <Breadcrumbs aria-label="breadcrumb">
@@ -176,13 +200,25 @@ const OrderList = (props) => {
                 </div>
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-12">
-                        <div className="card" style={{ width: "100%" }}>
+                        <div className="card shadow-sm" style={{ width: "100%" }}>
                             <div className="card-body">
                                 <h5 className="card-title">
                                     <Receipt /> Order List
                                 </h5>
 
                                 <div className="d-flex justify-content-end button-group mb-4">
+                                    {selectionModel.length > 0 && (
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            sx={{ marginRight: "10px" }}
+                                            onClick={() => {
+                                                handleOrderVendorFormDownload();
+                                            }}
+                                        >
+                                            Print Vendor Order Form
+                                        </Button>
+                                    )}
                                     <HeaderTableButton
                                         isUpdated={isUpdated}
                                         addButton="#orderModal"
@@ -214,6 +250,8 @@ const OrderList = (props) => {
                                         setIsUpdated={setIsUpdated}
                                         type="order"
                                         handleDetailClick={handleDetailClick}
+                                        selectionModel={selectionModel}
+                                        setSelectionModel={setSelectionModel}
                                     />
                                 </div>
                             </div>

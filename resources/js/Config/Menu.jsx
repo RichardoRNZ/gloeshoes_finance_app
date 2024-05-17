@@ -3,8 +3,10 @@ import Dashboard from "@/Components/Dashboard";
 import OrderDetail from "@/Components/OrderMenu/OrderDetail";
 import OrderList from "@/Components/OrderMenu/OrderList";
 import Product from "@/Components/ProductMenu/ProductList";
+import ReportPage from "@/Components/Reports/ReportPage";
+import ChangeUserForm from "@/Components/UserMenu/ChangeUserForm";
 
-import { BarChart, Construction, Groups, Home, Inventory2, Receipt } from "@mui/icons-material";
+import { BarChart, Groups, Home, Inventory2, Receipt } from "@mui/icons-material";
 
 export const renderMenuIcon = (menu) => {
     switch (menu) {
@@ -18,8 +20,6 @@ export const renderMenuIcon = (menu) => {
             return <Receipt />;
         case "Reports":
             return <BarChart />;
-        case "Vendors":
-            return <Construction />;
         default:
             return null;
     }
@@ -31,19 +31,20 @@ export const sidebarMenuRouter = (menuUrl, props) => {
     }
     switch (menuUrl) {
         case "/dashboard":
-            return <Dashboard />;
+            return <Dashboard {...props}/>;
         case "/customer":
             return <Customer {...props}/>;
         case "/product":
             return <Product {...props}/>;
         case "/orders":
             return <OrderList {...props}/>;
-        // case "Reports":
-        //     return <BarChart />;
-        // case "Vendors":
-        //     return <Construction />;
+        case "/reports":
+            return <ReportPage {...props}/>;
+        case "/change/user/page":
+            return <ChangeUserForm {...props}/>;
         default:
             return null;
     }
 };
+
 

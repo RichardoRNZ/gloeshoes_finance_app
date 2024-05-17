@@ -32,6 +32,7 @@ import {
 import { Menu, MenuItem } from "@mui/material";
 import { Link, usePage } from "@inertiajs/react";
 import { renderMenuIcon, sidebarMenuRouter } from "@/Config/Menu";
+import ProfileMenu from "@/Components/ProfileMenu";
 
 
 const drawerWidth = 240;
@@ -112,8 +113,8 @@ export default function Main(props) {
         "Customers",
         "Products",
         "Orders",
-        // "Reports",
-        // "Vendors",
+        "Reports",
+
     ];
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -170,20 +171,10 @@ export default function Main(props) {
                         className="welcome-text"
                         sx={{ marginRight: 5 }}
                     >
-                        Hello, {props.auth.user.username}
+                        Hello
                     </Typography>
                     <div>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleMenu}
-                            color="inherit"
-                        >
-                            {/* <Typography variant="h6" component="div">Admin</Typography> <ArrowDropDown/> */}
-                            <ExitToApp />
-                        </IconButton>
+                       <ProfileMenu username={props.auth.user.username}/>
                     </div>
                 </Toolbar>
             </AppBar>

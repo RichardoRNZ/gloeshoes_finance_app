@@ -1,4 +1,4 @@
-import { Cancel, Delete, Edit, RemoveRedEye, Save } from "@mui/icons-material";
+import { Cancel, Delete, Edit, PinDropSharp, RemoveRedEye, Save } from "@mui/icons-material";
 import { Box, TextField } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import React, { useState, useMemo } from "react";
@@ -84,6 +84,7 @@ const Datatable = (props) => {
     const [rowModesModel, setRowModesModel] = useState({});
     const [isEdit, setIsEdit] = useState(false);
 
+
     const columns = useMemo(() => {
         const object = {
             field: "actions",
@@ -140,15 +141,20 @@ const Datatable = (props) => {
                             label="Edit"
                             className="textPrimary"
                             data-bs-toggle={
-                                props.type !== "product" && props.type !== "orderProduct" ? "" : "modal"
+                                props.type !== "product" &&
+                                props.type !== "orderProduct"
+                                    ? ""
+                                    : "modal"
                             }
                             data-bs-target={
-                                props.type !== "product" && props.type !== "orderProduct"
+                                props.type !== "product" &&
+                                props.type !== "orderProduct"
                                     ? ""
                                     : props.targetModal
                             }
                             onClick={
-                                props.type !== "product" &&  props.type !== "orderProduct"
+                                props.type !== "product" &&
+                                props.type !== "orderProduct"
                                     ? handleEditClick(id)
                                     : () => props.handleEditClick(id)
                             }
@@ -223,6 +229,7 @@ const Datatable = (props) => {
         setRowModesModel(newRowModesModel);
     };
 
+
     return (
         <>
             <div style={{ height: 400, width: "100%" }}>
@@ -256,9 +263,16 @@ const Datatable = (props) => {
                     rowCount={props.rowCount}
                     paginationModel={props.paginationModel}
                     onPaginationModelChange={props.setPaginationModel}
+                    checkboxSelection={props.type === "order"}
                     hideFooterPagination={
-                        props.type === "orderProduct" || props.type === "payment" ? true : false
+                        props.type === "orderProduct" ||
+                        props.type === "payment" || props.type === "dashboard"
+
                     }
+                    rowSelectionModel={props.selectionModel}
+                    onRowSelectionModelChange={(newSelectionModel) => {
+                        props.setSelectionModel(newSelectionModel);
+                    }}
                 />
             </div>
         </>

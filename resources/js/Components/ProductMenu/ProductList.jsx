@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
+import FileSaver from "file-saver";
 import { MuiFileInput } from "mui-file-input";
 import React from "react";
 import { useEffect } from "react";
@@ -143,7 +144,15 @@ const Product = (props) => {
         setShowLoading(false);
 
     }
+    const downloadproductsData = async ()=>{
+        try {
+            const response = await axios.get("/products/export",{responseType : "blob"});
+            const blob = new Blob([response.data], {type :"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            FileSaver.saveAs(blob,"products.xlsx");
+        } catch (error) {
 
+        }
+    };
 
     return (
         <>
@@ -172,7 +181,7 @@ const Product = (props) => {
 
                 <div className="row align-items-center justify-content-center">
                     <div className="col-lg-12">
-                        <div className="card" style={{ width: "100%" }}>
+                        <div className="card shadow-sm" style={{ width: "100%" }}>
                             <div className="card-body">
                                 <h5 className="card-title">
                                     <Inventory2 /> Product List
@@ -184,6 +193,7 @@ const Product = (props) => {
                                         addButton="#productModal"
                                         typeAddButton="product"
                                         setIsNew={setIsNew}
+                                        download={downloadproductsData}
                                     />
                                 </div>
                                 <div className="d-flex justify-content-end mb-2">

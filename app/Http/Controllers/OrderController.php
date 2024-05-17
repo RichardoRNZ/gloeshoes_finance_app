@@ -9,12 +9,15 @@ use App\Models\HeaderPayment;
 use App\Models\HeaderTransaction;
 use App\Models\Product;
 use App\Models\Transaction;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 
 class OrderController extends Controller
@@ -33,7 +36,8 @@ class OrderController extends Controller
                 $query->whereHas('headerTransaction.customer', function ($query) use ($search) {
                     $query->where('name', 'like', "%$search%");
                 })
-                    ->orWhere('order_number', 'like', "%$search%");
+                    ->orWhere('order_number', 'like', "%$search%")
+                    ->orderBy('id','desc');
             });
 
         }
@@ -289,14 +293,88 @@ class OrderController extends Controller
                     $headerTransaction->total_price - $headerTransaction->headerPayment->payment_remaining_amount,
                     $headerTransaction->headerPayment->payment_remaining_amount,
                     $headerTransaction->headerPayment->payment_status === "PAID" ? "LUNAS" : "BELUM LUNAS",
-                    $headerTransaction->transaction->detailTransaction
+                    $headerTransaction->transaction->detailTransaction,
+                    true
                 )
             );
 
+
             return response()->json(['message' => "Successfully sent invoice", 'data' => $headerTransaction], 200);
+
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], $th->getCode());
         }
 
+    }
+    public function downloadInvoice($id)
+    {
+        $headerTransaction = HeaderTransaction::findOrFail($id);
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $data = [
+            'customerName' => $headerTransaction->customer->name,
+            'shippingPrice' => optional($headerTransaction->transaction->shipment)->price,
+            'address' => optional($headerTransaction->transaction->shipment)->shipping_address,
+            'orderId' => $headerTransaction->transaction->order_number,
+            'total' => $headerTransaction->total_price,
+            'paid' => $headerTransaction->total_price - $headerTransaction->headerPayment->payment_remaining_amount,
+            'remaining' => $headerTransaction->headerPayment->payment_remaining_amount,
+            'paymentStatus' => $headerTransaction->headerPayment->payment_status === "PAID" ? "LUNAS" : "BELUM LUNAS",
+            'items' => $headerTransaction->transaction->detailTransaction,
+            'isEmail'=> false
+        ];
+        $dompdf = new Dompdf($options);
+        $dompdf->setPaper('A3', 'potrait');
+        $dompdf->loadHtml(view('emails.email-template', $data));
+        $dompdf->render();
+        $output = $dompdf->output();
+        $pdfFileName = "orderReceipt" . '.pdf';
+        Storage::put('public/invoices/' . $pdfFileName, $output);
+
+        $pdfBytes = Storage::get('public/invoices/' . $pdfFileName);
+
+        Storage::delete('public/invoices/' . $pdfFileName);
+
+        return response($pdfBytes)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $pdfFileName . '"');
+
+    }
+    public function downloadVendorForm(Request $request){
+        $transactions = Transaction::with('detailTransaction')->whereIn('id',$request->transactionIds)->get();
+
+        $data = $transactions->flatMap(function ($transaction){
+            return $transaction->detailTransaction->map(function ($detail){
+                return [
+                    'productName' => $detail->product->name,
+                    'color' => $detail->color,
+                    'size' => $detail->size,
+                    'notes' => $detail->notes,
+                    'quantity' => $detail->quantity,
+                    'customerName' => $detail->transaction->headerTransaction->customer->name,
+                    'image' => $detail->product->image,
+                ];
+            });
+        });
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->setPaper('A4', 'potrait');
+        $dompdf->loadHtml(view('vendor-form',['allData'=>$data]));
+        $dompdf->render();
+        $output = $dompdf->output();
+        $pdfFileName = "Surat Pemesanan ".Carbon::now()->format('d M Y'). '.pdf';
+        Storage::put('public/invoices/' . $pdfFileName, $output);
+
+        $pdfBytes = Storage::get('public/invoices/' . $pdfFileName);
+
+        Storage::delete('public/invoices/' . $pdfFileName);
+
+        return response($pdfBytes)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $pdfFileName . '"');
     }
 }

@@ -128,9 +128,6 @@ const PaymentForm = (props) => {
                                                 label={
                                                     <span>
                                                         Image
-                                                        <span className="text-danger">
-                                                            *
-                                                        </span>
                                                     </span>
                                                 }
                                                 value={transferReceipt}

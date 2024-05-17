@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductExport;
 use App\Models\product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class productController extends Controller
 {
@@ -31,8 +33,9 @@ class productController extends Controller
             $searchTerm = $request->input('search');
             $query->where('name', 'like', "%$searchTerm%")
                 ->orWhere('sku', 'like', "%$searchTerm%");
+
         }
-        $products = $query->paginate($perPage, ['*'], 'page', $page);
+        $products = $query ->orderBy('id','desc')->paginate($perPage, ['*'], 'page', $page);
 
         // Mapping product data
         $products->getCollection()->transform(function ($item, $key) use ($products) {
@@ -144,5 +147,9 @@ class productController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
         return response()->json(['message' => "Successfully delete product"]);
+    }
+
+    public function exportProductData(){
+        return Excel::download(new ProductExport, "products.xlsx");
     }
 }
