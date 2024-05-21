@@ -229,13 +229,9 @@ const OrderDetail = (props) => {
             );
         } catch (error) {}
     };
-    console.log(props);
-    console.log(customers);
-    console.log(isUpdated);
-    console.log(products);
-    console.log(orderDetail);
 
-    // console.log(products)
+
+
     return (
         <div>
             <Loading isLoading={showLoading} />

@@ -30,9 +30,17 @@ class CustomerController extends Controller
             $query->where('name', 'like', "%$searchTerm%")
                 ->orWhere('email', 'like', "%$searchTerm%")
                 ->orWhere('address', 'like', "%$searchTerm%")
-                ->orWhere('instagram', 'like', "%$searchTerm%")
-                ->orderBy('id','desc');
+                ->orWhere('instagram', 'like', "%$searchTerm%");
+
         }
+        if($request->filled('order')){
+            $order = $request->input('order');
+            $query->orderBy($order[0]['field'], $order[0]['sort']);
+        }
+        else{
+            $query->orderBy('id', 'desc');
+        }
+
         $customers = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Mapping customer data

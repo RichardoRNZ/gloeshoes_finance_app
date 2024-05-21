@@ -134,8 +134,7 @@ export default function Main(props) {
     };
 
 
-    // console.log(page.url)
-    // console.log(props)
+
 
     return (
         <Box sx={{ display: "flex" }}>

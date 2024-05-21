@@ -26,7 +26,7 @@ const Dashboard = (props) => {
         {
             icon: faBox,
             total: props.completeTransaction,
-            title: "Total Transaction in " + thisMonth,
+            title: "Complete Transaction in " + thisMonth,
             color: "warning",
         },
         {
@@ -136,15 +136,7 @@ const Dashboard = (props) => {
         ],
     };
 
-    console.log(props);
-    console.log(new Date().getMonth);
-    console.log(
-        dayjs()
-            .month(new Date().getMonth() - 1)
-            .year(new Date().getFullYear())
-            .startOf("month")
-            .week()
-    );
+
     return (
         <>
             <div className="container">

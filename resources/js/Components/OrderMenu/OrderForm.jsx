@@ -85,7 +85,7 @@ const OrderForm = (props) => {
         setCustomerId(0);
     }
 
-    console.log("order", products);
+
     return (
         <>
             <Loading isLoading={isLoading} />

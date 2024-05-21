@@ -50,6 +50,10 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, Should
     {
         $headerStyle = [
             'font' => ['bold' => true],
+            'alignment' => [
+                'horizontal' => 'center',
+                'vertical' => 'center',
+            ],
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_MEDIUM,
@@ -69,8 +73,8 @@ class ProductExport implements FromCollection, WithHeadings, WithMapping, Should
         ];
 
         // Terapkan gaya ke seluruh area
-        $sheet->getStyle('A1:F1')->applyFromArray($headerStyle); // Header
-        $sheet->getStyle('A2:F' . ($sheet->getHighestRow()))->applyFromArray($dataStyle); // Data
+        $sheet->getStyle('A1:E1')->applyFromArray($headerStyle); // Header
+        $sheet->getStyle('A2:E' . ($sheet->getHighestRow()))->applyFromArray($dataStyle); // Data
 
         return [];
     }

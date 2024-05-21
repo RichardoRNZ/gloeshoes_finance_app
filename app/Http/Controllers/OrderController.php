@@ -36,22 +36,29 @@ class OrderController extends Controller
                 $query->whereHas('headerTransaction.customer', function ($query) use ($search) {
                     $query->where('name', 'like', "%$search%");
                 })
-                    ->orWhere('order_number', 'like', "%$search%")
-                    ->orderBy('id','desc');
+                    ->orWhere('order_number', 'like', "%$search%");
+
             });
 
+        }
+        if($request->filled('order')){
+            $order = $request->input('order');
+            $query->orderBy($order[0]['field'], $order[0]['sort']);
+        }
+        else{
+            $query->orderBy('id', 'desc');
         }
         $orders = $query->paginate($perPage, ['*'], 'page', $page);
         $orders->getCollection()->transform(function ($order, $key) use ($orders) {
             return [
                 'no' => $key + 1 + (($orders->currentPage() - 1) * $orders->perPage()),
                 'id' => $order->id,
-                'orderNumber' => $order->order_number,
-                'customerName' => optional($order->headerTransaction)->customer->name,
-                'orderDate' => $order->date,
-                'orderStatus' => $order->status,
-                'totalPrice' => "Rp. " . optional($order->headerTransaction)->total_price,
-                'paymentStatus' => optional($order->headerTransaction->headerPayment)->payment_status,
+                'order_number' => $order->order_number,
+                'customer_name' => optional($order->headerTransaction)->customer->name,
+                'date' => $order->date,
+                'order_status' => $order->status,
+                'total_price' => "Rp. " . optional($order->headerTransaction)->total_price,
+                'payment_status' => optional($order->headerTransaction->headerPayment)->payment_status,
             ];
         });
         return response()->json($orders);

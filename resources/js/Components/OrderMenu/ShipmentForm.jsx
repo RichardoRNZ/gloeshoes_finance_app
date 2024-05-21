@@ -93,9 +93,7 @@ const ShipmentForm = (props) => {
             setIsLoading(false);
         }
     };
-    console.log(formData);
-    console.log(isSameAddress);
-    console.log(props);
+
     return (
         <div>
             <Loading isLoading={isLoading} />

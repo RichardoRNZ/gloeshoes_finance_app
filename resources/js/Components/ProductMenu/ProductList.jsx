@@ -1,3 +1,4 @@
+import Error from "@/Pages/Error";
 import { Inventory2, UploadFile } from "@mui/icons-material";
 import {
     Breadcrumbs,
@@ -36,32 +37,33 @@ const Product = (props) => {
     const [isUpdated, setIsUpdated] = useState(false);
     const [isNew, setIsNew] = useState(true);
     const [product, setProduct] = useState("");
+    const [sortModel, setSortModel] = useState([]);
+    const [hasError, setHasError] = useState(false);
+
     const columns = [
-        { field: "no", headerName: "No", width: 70 },
+        { field: "no", headerName: "No", width: 70,  sortable:false, },
         { field: "sku", headerName: "SKU", width: 150 },
         {
             field: "name",
             headerName: "Product Name",
             width: 150,
-
         },
         {
             field: "price",
             headerName: "Price",
             width: 100,
-
         },
         {
             field: "cost",
             headerName: "Cost of Good Sold",
             width: 150,
-
         },
         { field: "stock", headerName: "Stock", width: 80 },
         {
             field: "status",
             headerName: "Status",
             width: 150,
+            sortable:false,
             renderCell: (params) => (
                 <Chip
                     color={
@@ -79,6 +81,7 @@ const Product = (props) => {
             field: "image",
             headerName: "Image",
             width: 200,
+            sortable:false,
 
             renderCell: (params) => (
                 <img src={params.value} className="h-100 w-50" />
@@ -88,7 +91,7 @@ const Product = (props) => {
 
     useEffect(() => {
         fetchProductsData();
-    }, [props.ziggy.location, paginationModel, search]);
+    }, [props.ziggy.location, paginationModel, search, sortModel]);
 
     const fetchProductsData = async (
         page = paginationModel.page + 1,
@@ -101,12 +104,20 @@ const Product = (props) => {
                     perPage: size,
                     page: page,
                     search: search,
+                    order : sortModel
                 },
             });
             setRows(response.data.data);
             setRowCount(response.data.total);
             setIsLoading(false);
-        } catch (error) {}
+        } catch (error) {
+            setHasError(true);
+            setTimeout(() => {
+                throw error;
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
     const getProductDetails = async (id) => {
         try {
@@ -138,91 +149,105 @@ const Product = (props) => {
             });
         }
     };
-    const handleDeleteClick = async() => {
+    const handleDeleteClick = async () => {
         setShowLoading(true);
         await deleteProduct();
         setShowLoading(false);
-
-    }
-    const downloadproductsData = async ()=>{
+    };
+    const downloadproductsData = async () => {
         try {
-            const response = await axios.get("/products/export",{responseType : "blob"});
-            const blob = new Blob([response.data], {type :"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-            FileSaver.saveAs(blob,"products.xlsx");
-        } catch (error) {
-
-        }
+            const response = await axios.get("/products/export", {
+                responseType: "blob",
+            });
+            const blob = new Blob([response.data], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
+            FileSaver.saveAs(blob, "products.xlsx");
+        } catch (error) {}
     };
 
     return (
         <>
-         <ConfirmModal
+            <ConfirmModal
                 id="deleteModal"
                 type="delete"
                 text="Are you sure want to delete?"
                 handleClick={() => handleDeleteClick()}
             />
-            <Loading isLoading={showLoading}/>
-            <div className="container">
-                <div className="mb-4">
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link
-                            underline="none"
-                            color="#243ab0"
-                            href={route("dashboard")}
-                        >
-                            Home
-                        </Link>
-                        <Typography color="#243ab0" sx={{ fontWeight: "600" }}>
-                            Products
-                        </Typography>
-                    </Breadcrumbs>
-                </div>
+            <Loading isLoading={showLoading} />
+            {hasError ? (
+                <Error />
+            ) : (
+                <div className="container">
+                    <div className="mb-4">
+                        <Breadcrumbs aria-label="breadcrumb">
+                            <Link
+                                underline="none"
+                                color="#243ab0"
+                                href={route("dashboard")}
+                            >
+                                Home
+                            </Link>
+                            <Typography
+                                color="#243ab0"
+                                sx={{ fontWeight: "600" }}
+                            >
+                                Products
+                            </Typography>
+                        </Breadcrumbs>
+                    </div>
 
-                <div className="row align-items-center justify-content-center">
-                    <div className="col-lg-12">
-                        <div className="card shadow-sm" style={{ width: "100%" }}>
-                            <div className="card-body">
-                                <h5 className="card-title">
-                                    <Inventory2 /> Product List
-                                </h5>
+                    <div className="row align-items-center justify-content-center">
+                        <div className="col-lg-12">
+                            <div
+                                className="card shadow-sm"
+                                style={{ width: "100%" }}
+                            >
+                                <div className="card-body">
+                                    <h5 className="card-title">
+                                        <Inventory2 /> Product List
+                                    </h5>
 
-                                <div className="d-flex justify-content-end button-group mb-4">
-                                    <HeaderTableButton
-                                        isUpdated={isUpdated}
-                                        addButton="#productModal"
-                                        typeAddButton="product"
-                                        setIsNew={setIsNew}
-                                        download={downloadproductsData}
-                                    />
-                                </div>
-                                <div className="d-flex justify-content-end mb-2">
-                                    <TextField
-                                        id="standard-basic"
-                                        label="Search"
-                                        variant="standard"
-                                        value={search}
-                                        onChange={(e) =>
-                                            setSearch(e.target.value)
-                                        }
-                                    />
-                                </div>
-                                <div className="row">
-                                    <Datatable
-                                        rows={rows}
-                                        columns={columns}
-                                        setRows={setRows}
-                                        isLoading={isLoading}
-                                        rowCount={rowCount}
-                                        paginationModel={paginationModel}
-                                        setPaginationModel={setPaginationModel}
-                                        setRowId={setRowId}
-                                        setIsUpdated={setIsUpdated}
-                                        type="product"
-                                        targetModal="#productModal"
-                                        handleEditClick={handleEditClick}
-                                    />
-                                    {/* <DataGrid
+                                    <div className="d-flex justify-content-end button-group mb-4">
+                                        <HeaderTableButton
+                                            isUpdated={isUpdated}
+                                            addButton="#productModal"
+                                            typeAddButton="product"
+                                            setIsNew={setIsNew}
+                                            download={downloadproductsData}
+                                        />
+                                    </div>
+                                    <div className="d-flex justify-content-end mb-2">
+                                        <TextField
+                                            id="standard-basic"
+                                            label="Search"
+                                            variant="standard"
+                                            value={search}
+                                            onChange={(e) =>
+                                                setSearch(e.target.value)
+                                            }
+                                        />
+                                    </div>
+                                    <div className="row">
+                                        <Datatable
+                                            rows={rows}
+                                            columns={columns}
+                                            setRows={setRows}
+                                            isLoading={isLoading}
+                                            rowCount={rowCount}
+                                            paginationModel={paginationModel}
+                                            setPaginationModel={
+                                                setPaginationModel
+                                            }
+                                            setRowId={setRowId}
+                                            setIsUpdated={setIsUpdated}
+                                            type="product"
+                                            targetModal="#productModal"
+                                            handleEditClick={handleEditClick}
+                                            sortModel={sortModel}
+                                            setSortModel={setSortModel}
+                                        />
+                                        {/* <DataGrid
                                         columns={columns}
                                         rows={rows}
                                         paginationModel={paginationModel}
@@ -233,12 +258,13 @@ const Product = (props) => {
                                         rowCount={rowCount}
                                         loading={isLoading}
                                     /> */}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
             <ProductForm
                 user={props.auth.user.username}
                 id={rowId}

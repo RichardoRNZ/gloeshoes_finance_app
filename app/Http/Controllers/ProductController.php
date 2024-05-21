@@ -35,7 +35,14 @@ class productController extends Controller
                 ->orWhere('sku', 'like', "%$searchTerm%");
 
         }
-        $products = $query ->orderBy('id','desc')->paginate($perPage, ['*'], 'page', $page);
+        if($request->filled('order')){
+            $order = $request->input('order');
+            $query->orderBy($order[0]['field'], $order[0]['sort']);
+        }
+        else{
+            $query->orderBy('id', 'desc');
+        }
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Mapping product data
         $products->getCollection()->transform(function ($item, $key) use ($products) {
@@ -67,7 +74,7 @@ class productController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'sku' => 'required',
-            'stock' => 'required|numeric',
+            'stock' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:1000',
             'cost' => 'required|numeric|min:1000',
             'image' => 'required|image',

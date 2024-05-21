@@ -47,7 +47,7 @@ export default function OrderTabs(props) {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    console.log(props);
+
 
     return (
         <Box sx={{ width: "100%" }}>

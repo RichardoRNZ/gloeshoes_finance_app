@@ -108,8 +108,7 @@ const AddProductForm = (props) => {
             setIsLoading(false);
         }
     };
-    console.log(props.orderDetail);
-    console.log(products);
+  
     return (
         <div>
             <Loading isLoading={isLoading} />

@@ -261,8 +261,10 @@ const Datatable = (props) => {
                     loading={props.isLoading}
                     paginationMode="server"
                     rowCount={props.rowCount}
+                    disableColumnFilter
                     paginationModel={props.paginationModel}
                     onPaginationModelChange={props.setPaginationModel}
+                    keepNonExistentRowsSelected
                     checkboxSelection={props.type === "order"}
                     hideFooterPagination={
                         props.type === "orderProduct" ||
@@ -270,6 +272,11 @@ const Datatable = (props) => {
 
                     }
                     rowSelectionModel={props.selectionModel}
+                    sortingMode="server"
+                    sortModel={props.sortModel}
+                    onSortModelChange={(newSortModel) => {
+                        props.setSortModel(newSortModel);
+                    }}
                     onRowSelectionModelChange={(newSelectionModel) => {
                         props.setSelectionModel(newSelectionModel);
                     }}

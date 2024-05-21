@@ -62,9 +62,7 @@ const Login = (props) => {
         setPassword(event.target.value);
         setIsEmptyPassword(event.target.value.length === 0);
     }
-    // console.log(username);
-    console.log(props);
-    console.log(isEmptyUsername);
+
     return (
         <>
             <Loading isLoading={isLoading} />

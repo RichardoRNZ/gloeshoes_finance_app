@@ -106,6 +106,7 @@ const AddProductForm = (props) => {
 
     return (
         <>
+        
             <Loading isLoading={isLoading} />
             <div
                 class="modal fade"
@@ -152,7 +153,7 @@ const AddProductForm = (props) => {
                                                 className="w-100 mb-4"
                                                 value={formData.sku}
                                                 name="sku"
-                                                InputLabelProps={props.isNew?{ shrink: true }:""}
+                                                InputLabelProps={{shrink: true }}
                                                 onChange={(e) =>
                                                     handleChange(e)
                                                 }

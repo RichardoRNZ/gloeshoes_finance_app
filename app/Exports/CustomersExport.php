@@ -43,7 +43,7 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
             $customer->address,
             $customer->email,
             "'" . $customer->phone_number,
-            $customer->instagram_account,
+            $customer->instagram,
 
 
         ];
@@ -52,6 +52,10 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
     {
         $headerStyle = [
             'font' => ['bold' => true],
+            'alignment' => [
+                'horizontal' => 'center',
+                'vertical' => 'center',
+            ],
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_MEDIUM,
@@ -62,6 +66,7 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
 
         // Style untuk sel data
         $dataStyle = [
+           
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_MEDIUM,

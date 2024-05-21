@@ -67,8 +67,7 @@ const PaymentForm = (props) => {
         setTrasferReceipt(null);
         setPaymentDate(null);
     };
-    console.log(formData);
-    console.log(paymentDate);
+  
 
     return (
         <>

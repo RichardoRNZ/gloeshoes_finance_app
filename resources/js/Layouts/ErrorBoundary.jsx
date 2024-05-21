@@ -14,11 +14,14 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can log the error to an error reporting service
-    console.error(error, errorInfo);
-  }
 
-  render() {
+    getDerivedStateFromError(error);
+    console.error(error, errorInfo);
+}
+
+
+render() {
+
     if (this.state.hasError) {
       return <div><Error/></div>;
     }

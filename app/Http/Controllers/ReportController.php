@@ -145,7 +145,7 @@ class ReportController extends Controller
             ->join('products', 'detail_transactions.product_id', '=', 'products.id')
             ->selectRaw("$groupBy as groupByColumn")
             ->selectRaw('SUM(products.cost * detail_transactions.quantity) AS total_cost')
-            ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) - SUM(products.cost * detail_transactions.quantity) AS gross_profit')
+            ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) - SUM(products.cost * detail_transactions.quantity) AS total_amount')
             ->whereBetween('date', [$startDate, $endDate])
             ->groupByRaw('groupByColumn')
             ->orderByRaw('groupByColumn')
@@ -156,19 +156,19 @@ class ReportController extends Controller
             ->join('detail_transactions', 'transactions.id', '=', 'detail_transactions.transaction_id')
             ->join('products', 'detail_transactions.product_id', '=', 'products.id')
             ->selectRaw("$groupBy as groupByColumn")
-            ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) - SUM(products.cost * detail_transactions.quantity) AS gross_profit')
+            ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) - SUM(products.cost * detail_transactions.quantity) AS total_amount')
             ->whereBetween('date', [$type === 'Monthly Gross Profit' ? $startDate->copy()->subDays(30) : $startDate->copy()->subYear(), $startDate])
             ->groupByRaw('groupByColumn')
             ->orderByRaw('groupByColumn')
             ->get();
 
         $totalCost = $currentGrossProfit->sum('total_cost');
-        $lastGrossProfitSum = $lastGrossProfit->sum('gross_profit');
-        $totalPecentage = $lastGrossProfitSum !== 0 ? (($currentGrossProfit->sum('gross_profit') - $lastGrossProfitSum) / $lastGrossProfitSum) * 100 : 100;
+        $lastGrossProfitSum = $lastGrossProfit->sum('total_amount');
+        $totalPecentage = $lastGrossProfitSum !== 0 ? (($currentGrossProfit->sum('total_amount') - $lastGrossProfitSum) / $lastGrossProfitSum) * 100 : 100;
 
         $detailType = [
             'Total Cost' => $totalCost,
-            'Total Gross Profit' => $currentGrossProfit->sum('gross_profit'),
+            'Total Gross Profit' => $currentGrossProfit->sum('total_amount'),
             'Profit Pecentage' => round($totalPecentage, 2),
         ];
 

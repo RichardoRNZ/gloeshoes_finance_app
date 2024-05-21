@@ -155,7 +155,7 @@ const ReportPage = (props) => {
         } catch (error) {}
     };
 
-    console.log(reportData);
+
     return (
         <>
             <Loading isLoading={isLoading} />

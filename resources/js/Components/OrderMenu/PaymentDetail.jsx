@@ -49,7 +49,7 @@ const PaymentDetail = (props) => {
     const [rowId, setRowId] = useState(0);
     const [isUpdated, setIsUpdated] = useState(false);
 
-    console.log(props);
+  
     const deletePayment = async () => {
         try {
             setIsLoading(true);

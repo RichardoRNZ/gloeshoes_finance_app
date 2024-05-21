@@ -4,7 +4,7 @@ import React, {useState} from 'react'
 const Loading = (props) => {
 
 
-// console.log(props)
+
     return (
       <div>
         <Backdrop
