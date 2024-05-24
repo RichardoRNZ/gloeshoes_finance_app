@@ -1,4 +1,8 @@
-import { TroubleshootTwoTone, Visibility, VisibilityOff } from "@mui/icons-material";
+import {
+    TroubleshootTwoTone,
+    Visibility,
+    VisibilityOff,
+} from "@mui/icons-material";
 import {
     Breadcrumbs,
     Button,
@@ -20,6 +24,7 @@ import Loading from "../Loading";
 
 const ChangeUserForm = ({ auth }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: auth.user.username,
         password: "",
@@ -36,6 +41,7 @@ const ChangeUserForm = ({ auth }) => {
     const [isNotValid, setIsNotValid] = useState(true);
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
     const handleMouseDownPassword = (event) => event.preventDefault();
 
     const handleInputChange = (field) => (event) => {
@@ -44,7 +50,7 @@ const ChangeUserForm = ({ auth }) => {
     };
 
     const validateFields = () => {
-        const usernameEmpty = formData.username.length === 0;
+        const usernameEmpty = formData.username.trim().length === 0;
         const passwordEmpty = formData.password.length === 0;
         const confirmPasswordEmpty = formData.confirmPassword.length === 0;
         const passwordsMatch = formData.password === formData.confirmPassword;
@@ -72,6 +78,11 @@ const ChangeUserForm = ({ auth }) => {
             const response = await axios.put("/change/user", {
                 username: formData.username,
                 password: formData.password,
+            });
+            setFormData({
+                username: auth.user.username,
+                password: "",
+                confirmPassword: "",
             });
             Swal.fire({
                 icon: "success",
@@ -157,7 +168,10 @@ const ChangeUserForm = ({ auth }) => {
                                                 )}
                                                 onBlur={validateFields}
                                                 value={formData.password}
-                                                error={formErrors.password || formErrors.passwordLength }
+                                                error={
+                                                    formErrors.password ||
+                                                    formErrors.passwordLength
+                                                }
                                                 endAdornment={
                                                     <InputAdornment position="end">
                                                         <IconButton
@@ -208,7 +222,7 @@ const ChangeUserForm = ({ auth }) => {
                                             <OutlinedInput
                                                 id="outlined-adornment-confirm-password"
                                                 type={
-                                                    showPassword
+                                                    showConfirmPassword
                                                         ? "text"
                                                         : "password"
                                                 }
@@ -226,14 +240,14 @@ const ChangeUserForm = ({ auth }) => {
                                                         <IconButton
                                                             aria-label="toggle password visibility"
                                                             onClick={
-                                                                handleClickShowPassword
+                                                               handleClickShowConfirmPassword
                                                             }
                                                             onMouseDown={
                                                                 handleMouseDownPassword
                                                             }
                                                             edge="end"
                                                         >
-                                                            {showPassword ? (
+                                                            {showConfirmPassword ? (
                                                                 <VisibilityOff />
                                                             ) : (
                                                                 <Visibility />

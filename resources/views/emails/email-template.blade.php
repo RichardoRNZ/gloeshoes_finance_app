@@ -306,6 +306,8 @@
                                         </td>
                                     </tr>
                                 </table>
+
+
                                 <table cellpadding="0" cellspacing="0" border="0" align="center" width="640"
                                     style="width: 640px; min-width: 640px;" role="presentation" bgcolor="#FFFFFF">
                                     <tbody>
@@ -331,6 +333,7 @@
                                                 untuk segera melakukan pembayaran untuk pesanan anda. Berikut detail
                                                 pemesanan anda.
                                             </td>
+
                                         </tr>
                                     </tbody>
                                 </table>
@@ -468,6 +471,47 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <table cellpadding="0" cellspacing="0" border="0" align="center" width="640"
+                                    style="width: 640px; min-width: 640px;" role="presentation" bgcolor="#FFFFFF">
+                                    <tr>
+                                        <td height="60" style="line-height:60px;min-height:60px;">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table cellpadding="0" cellspacing="0" border="0" align="center" width="640"
+                                    style="width: 640px; min-width: 640px; " role="presentation" bgcolor="#FFFFFF">
+                                    <tbody>
+                                        <tr>
+                                            <td align="left"
+                                                style="color:#5a5a5a;padding:10px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:normal;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;"
+                                                class="table-container">
+                                                Pembayaran dapat dilakukan melalui transfer pada salah satu rekening a.n
+                                                <b> Nabella Zya Arofa</b>:
+
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="color:#5a5a5a;padding:10px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:500;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;"
+                                                class="table-container">BRI : 315001024834538</td>
+
+                                        </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="color:#5a5a5a;padding:10px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:500;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;"
+                                                class="table-container">BCA : 3660328512</td>
+
+                                        </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="color:#5a5a5a;padding:10px 40px 0 40px;font-family: 'Lato', Arial, Helvetica, sans-serif;font-weight:500;font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.4;"
+                                                class="table-container">Mandiri : 1440022020942</td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                                 <table cellpadding="0" cellspacing="0" border="0" align="center" width="640"
                                     style="width: 640px; min-width: 640px;" role="presentation" bgcolor="#FFFFFF">
                                     <tr>

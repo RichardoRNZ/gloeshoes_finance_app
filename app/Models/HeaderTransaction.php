@@ -25,7 +25,7 @@ class HeaderTransaction extends Model
         return $this->hasOne(Transaction::class,'header_id','id');
     }
     public function customer(){
-        return $this->belongsTo(Customer::class,'customer_id','id');
+        return $this->belongsTo(Customer::class,'customer_id','id')->withTrashed();
     }
     public function headerPayment(){
         return $this->hasOne(HeaderPayment::class,'header_transaction_id','id');

@@ -21,10 +21,10 @@ import Loading from "../Loading";
 
 const OrderForm = (props) => {
     const [products, setProducts] = useState([
-        { productId: "", size: "", color: "", notes: "" },
+        { productId: "", size: "", quantity:"", color: "", notes: "" },
     ]);
     const [orderDate, setOrderDate] = useState(null);
-    const [customerId, setCustomerId] = useState(0);
+    const [customerId, setCustomerId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const addProductField = () => {
         const product = {
@@ -79,7 +79,7 @@ const OrderForm = (props) => {
     };
     const resetFields = () => {
         setProducts([
-            { productId: "", size: "", color: "", notes: "" },
+            { productId: "", size: "", color: "", notes: "", quantity:"" },
         ]);
         setOrderDate(null);
         setCustomerId(0);

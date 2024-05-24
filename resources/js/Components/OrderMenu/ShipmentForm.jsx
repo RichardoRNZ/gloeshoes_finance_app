@@ -17,7 +17,7 @@ const ShipmentForm = (props) => {
               name: "",
               receiptNumber: "",
               price: null,
-              address: isSameAddress ? props.customerAddress : "",
+              address: props.customerAddress,
           }
         : {
               name: props.shipmentData?.name,
@@ -27,7 +27,13 @@ const ShipmentForm = (props) => {
           };
     useEffect(() => {
         setFormData(initialState);
-    }, [props.isNewShipment, isSameAddress]);
+    }, [props.isNewShipment]);
+    useEffect(() => {
+        setFormData((prevData) => ({
+           ...prevData,
+            address: isSameAddress? props.customerAddress : "",
+        }));
+    }, [isSameAddress]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -93,6 +99,10 @@ const ShipmentForm = (props) => {
             setIsLoading(false);
         }
     };
+    const resetFields = () => {
+        setFormData(initialState);
+        setIsSameAddress(true);
+    }
 
     return (
         <div>
@@ -235,7 +245,7 @@ const ShipmentForm = (props) => {
                                 color="error"
                                 data-bs-dismiss="modal"
                                 sx={{ marginRight: "10px" }}
-                                onClick={() => setFormData(initialState)}
+                                onClick={() => resetFields()}
                             >
                                 Discard
                             </Button>

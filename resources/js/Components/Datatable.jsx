@@ -1,4 +1,11 @@
-import { Cancel, Delete, Edit, PinDropSharp, RemoveRedEye, Save } from "@mui/icons-material";
+import {
+    Cancel,
+    Delete,
+    Edit,
+    PinDropSharp,
+    RemoveRedEye,
+    Save,
+} from "@mui/icons-material";
 import { Box, TextField } from "@mui/material";
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import React, { useState, useMemo } from "react";
@@ -84,7 +91,6 @@ const Datatable = (props) => {
     const [rowModesModel, setRowModesModel] = useState({});
     const [isEdit, setIsEdit] = useState(false);
 
-
     const columns = useMemo(() => {
         const object = {
             field: "actions",
@@ -169,6 +175,7 @@ const Datatable = (props) => {
                         data-bs-toggle="modal"
                         data-bs-target="#deleteModal"
                         color="inherit"
+                        disabled={props.type === "orderProduct" && props.rows.length === 1}
                         onClick={() => props.setRowId(id)}
                     />,
                 ];
@@ -229,7 +236,6 @@ const Datatable = (props) => {
         setRowModesModel(newRowModesModel);
     };
 
-
     return (
         <>
             <div style={{ height: 400, width: "100%" }}>
@@ -268,8 +274,9 @@ const Datatable = (props) => {
                     checkboxSelection={props.type === "order"}
                     hideFooterPagination={
                         props.type === "orderProduct" ||
-                        props.type === "payment" || props.type === "dashboard"
-
+                        props.type === "payment" ||
+                        props.type === "dashboard" ||
+                        (props.type === "customer" && props.isUpdated)
                     }
                     rowSelectionModel={props.selectionModel}
                     sortingMode="server"

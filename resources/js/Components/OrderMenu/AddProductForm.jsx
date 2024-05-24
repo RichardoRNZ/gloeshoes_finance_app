@@ -19,13 +19,13 @@ import Loading from "../Loading";
 
 const AddProductForm = (props) => {
     const initialState = props.isNew
-        ? { productId: "", size: "", color: "", notes: "", quantity:null }
+        ? { productId: "", size: "", color: "", notes: "", quantity: "" }
         : {
               productId: props.orderDetail.productId,
               size: props.orderDetail.size,
               color: props.orderDetail.color,
-              notes: props.orderDetail.notes,
-              quantity : props.orderDetail.quantity
+              notes: props.orderDetail.notes??"",
+              quantity: props.orderDetail.quantity,
           };
 
     const [products, setProducts] = useState([]);
@@ -108,7 +108,7 @@ const AddProductForm = (props) => {
             setIsLoading(false);
         }
     };
-  
+
     return (
         <div>
             <Loading isLoading={isLoading} />
@@ -148,7 +148,9 @@ const AddProductForm = (props) => {
                                                     onClick={() =>
                                                         addProductField()
                                                     }
-                                                >Add Product</Button>
+                                                >
+                                                    Add Product
+                                                </Button>
                                             )}
                                         </div>
                                     </div>
@@ -335,7 +337,7 @@ const AddProductForm = (props) => {
                                 color="error"
                                 data-bs-dismiss="modal"
                                 sx={{ marginRight: "10px" }}
-                                onClick={() => resetFields()}
+                                onClick={() => setProducts([initialState])}
                             >
                                 Discard
                             </Button>

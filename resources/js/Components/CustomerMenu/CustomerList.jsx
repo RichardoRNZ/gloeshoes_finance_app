@@ -230,6 +230,7 @@ const Customer = (props) => {
                                             type="customer"
                                             sortModel={sortModel}
                                             setSortModel={setSortModel}
+                                            isUpdated={isUpdated}
                                         />
                                     </div>
                                 </div>

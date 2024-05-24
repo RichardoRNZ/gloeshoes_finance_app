@@ -41,12 +41,19 @@ class OrderController extends Controller
             });
 
         }
-        if($request->filled('order')){
+        if ($request->filled('order')) {
             $order = $request->input('order');
             $query->orderBy($order[0]['field'], $order[0]['sort']);
-        }
-        else{
-            $query->orderBy('id', 'desc');
+        } else {
+            $query->orderByRaw("
+            CASE status
+                WHEN 'CREATED' THEN 1
+                WHEN 'ON PROGRESS' THEN 2
+                WHEN 'ON DELIVERY' THEN 3
+                WHEN 'COMPLETED' THEN 4
+                ELSE 5
+            END ASC
+        ")->orderBy('id', 'desc');
         }
         $orders = $query->paginate($perPage, ['*'], 'page', $page);
         $orders->getCollection()->transform(function ($order, $key) use ($orders) {
@@ -54,10 +61,10 @@ class OrderController extends Controller
                 'no' => $key + 1 + (($orders->currentPage() - 1) * $orders->perPage()),
                 'id' => $order->id,
                 'order_number' => $order->order_number,
-                'customer_name' => optional($order->headerTransaction)->customer->name,
+                'customer_name' => optional($order->headerTransaction->customer)->name,
                 'date' => $order->date,
-                'order_status' => $order->status,
-                'total_price' => "Rp. " . optional($order->headerTransaction)->total_price,
+                'status' => $order->status,
+                'totalPrice' => "Rp. " . optional($order->headerTransaction)->total_price,
                 'payment_status' => optional($order->headerTransaction->headerPayment)->payment_status,
             ];
         });
@@ -75,7 +82,7 @@ class OrderController extends Controller
             'products.*.productId' => 'required',
             'products.*.color' => 'required',
             'products.*.size' => 'required',
-            'products.*.quantity' => 'required|min:1',
+            'products.*.quantity' => 'required|numeric|min:1',
 
         ]);
 
@@ -191,7 +198,7 @@ class OrderController extends Controller
             'products.*.productId' => 'required',
             'products.*.color' => 'required',
             'products.*.size' => 'required',
-            'products.*.quantity' => 'required|min:1',
+            'products.*.quantity' => 'required|numeric|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -227,7 +234,7 @@ class OrderController extends Controller
             'productId' => 'required',
             'color' => 'required',
             'size' => 'required',
-            'quantity' => 'required',
+            'quantity' => 'required|numeric|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -329,7 +336,7 @@ class OrderController extends Controller
             'remaining' => $headerTransaction->headerPayment->payment_remaining_amount,
             'paymentStatus' => $headerTransaction->headerPayment->payment_status === "PAID" ? "LUNAS" : "BELUM LUNAS",
             'items' => $headerTransaction->transaction->detailTransaction,
-            'isEmail'=> false
+            'isEmail' => false
         ];
         $dompdf = new Dompdf($options);
         $dompdf->setPaper('A3', 'potrait');
@@ -348,11 +355,12 @@ class OrderController extends Controller
             ->header('Content-Disposition', 'inline; filename="' . $pdfFileName . '"');
 
     }
-    public function downloadVendorForm(Request $request){
-        $transactions = Transaction::with('detailTransaction')->whereIn('id',$request->transactionIds)->get();
+    public function downloadVendorForm(Request $request)
+    {
+        $transactions = Transaction::with('detailTransaction')->whereIn('id', $request->transactionIds)->get();
 
-        $data = $transactions->flatMap(function ($transaction){
-            return $transaction->detailTransaction->map(function ($detail){
+        $data = $transactions->flatMap(function ($transaction) {
+            return $transaction->detailTransaction->map(function ($detail) {
                 return [
                     'productName' => $detail->product->name,
                     'color' => $detail->color,
@@ -370,10 +378,10 @@ class OrderController extends Controller
         $options->set('isRemoteEnabled', true);
         $dompdf = new Dompdf($options);
         $dompdf->setPaper('A4', 'potrait');
-        $dompdf->loadHtml(view('vendor-form',['allData'=>$data]));
+        $dompdf->loadHtml(view('vendor-form', ['allData' => $data]));
         $dompdf->render();
         $output = $dompdf->output();
-        $pdfFileName = "Surat Pemesanan ".Carbon::now()->format('d M Y'). '.pdf';
+        $pdfFileName = "Surat Pemesanan " . Carbon::now()->format('d M Y') . '.pdf';
         Storage::put('public/invoices/' . $pdfFileName, $output);
 
         $pdfBytes = Storage::get('public/invoices/' . $pdfFileName);

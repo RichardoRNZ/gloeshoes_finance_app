@@ -51,9 +51,9 @@ const ReportPage = (props) => {
             setIsLoading(true);
             const response = await axios.get(
                 "/report/data?startDate=" +
-                    fromDate +
+                    (fromDate??"") +
                     "&endDate=" +
-                    toDate +
+                    (toDate??"") +
                     "&type=" +
                     reportTypeValue
             );
@@ -70,16 +70,21 @@ const ReportPage = (props) => {
         }
     };
     const errorMessage = React.useMemo(() => {
-        switch (error) {
-            case "maxDate": {
-                return "Date different not be higher than 31 days";
+        switch (true) {
+            case error === "maxDate" && reportTypeValue.split(" ")[0] === "Monthly": {
+                return "Date difference should not exceed 31 days";
             }
-
+            case error === "maxDate" && reportTypeValue.split(" ")[0] === "Annual": {
+                return "Date difference should not exceed 12 months";
+            }
+            case error === "maxDate" :{
+                return "From date must be lower than To Date";
+            }
             default: {
                 return "";
             }
         }
-    }, [error]);
+    }, [error, reportTypeValue]);
     const chartDataSet = {
         labels: reportData.dataByType?.currentData.map(
             (row) => row.groupByColumn
@@ -233,6 +238,14 @@ const ReportPage = (props) => {
                                                 className="w-100 mb-4"
                                                 value={fromDate}
                                                 disableFuture
+                                                onError={(err) => setError(err)}
+                                                maxDate={dayjs(toDate)??null}
+                                                slotProps={{
+                                                    textField: {
+                                                        helperText:
+                                                            errorMessage,
+                                                    },
+                                                }}
                                                 onChange={(date) =>
                                                     setFromDate(
                                                         dayjs(date).format(

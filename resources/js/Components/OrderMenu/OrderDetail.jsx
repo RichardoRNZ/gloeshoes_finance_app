@@ -50,31 +50,44 @@ const OrderDetail = (props) => {
             field: "productName",
             headerName: "Product Name",
             width: 200,
+            sortable: false
+
         },
         {
             field: "size",
             headerName: "Size",
             width: 120,
+            sortable: false
+        },
+         {
+            field: "color",
+            headerName: "Color",
+            width: 120,
+            sortable: false
         },
         {
             field: "price",
             headerName: "Price",
             width: 150,
+            sortable: false
         },
         {
             field: "quantity",
             headerName: "Quantity",
             width: 130,
+            sortable: false
         },
         {
             field: "notes",
             headerName: "Notes",
             width: 150,
+            sortable: false
         },
         {
             field: "imageUrl",
             headerName: "Image",
             width: 150,
+            sortable: false ,
             renderCell: (params) => (
                 <img src={params.value} className="h-100 w-50" />
             ),

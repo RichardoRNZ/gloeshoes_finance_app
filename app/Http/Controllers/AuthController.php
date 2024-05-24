@@ -39,7 +39,7 @@ class AuthController extends Controller
     public function changeUserData(Request $request){
         $validator = Validator::make($request->all(), [
             'username' => 'required',
-            'password' => 'required|min:8',
+            'password' => 'required|min:8|alpha_num',
 
         ]);
         if ($validator->fails()) {

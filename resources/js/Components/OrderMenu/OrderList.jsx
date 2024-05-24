@@ -79,7 +79,7 @@ const OrderList = (props) => {
                 dayjs(params?.value).format("DD MMMM YYYY"),
         },
         {
-            field: "order_status",
+            field: "status",
             headerName: "Order Status",
             width: 150,
             renderCell: (params) => (

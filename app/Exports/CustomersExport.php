@@ -19,6 +19,7 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
     /**
      * @return \Illuminate\Support\Collection
      */
+    private $index = 0;
     public function collection()
     {
         //
@@ -27,7 +28,7 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
     public function headings(): array
     {
         return [
-            'ID Customer',
+            'No',
             'Nama Customer',
             'Alamat',
             'Email',
@@ -37,8 +38,9 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
     }
     public function map($customer): array
     {
+
         return [
-            $customer->id,
+            ++$this->index,
             $customer->name,
             $customer->address,
             $customer->email,
@@ -66,7 +68,7 @@ class CustomersExport implements FromCollection, ShouldAutoSize, WithHeadings, W
 
         // Style untuk sel data
         $dataStyle = [
-           
+
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_MEDIUM,

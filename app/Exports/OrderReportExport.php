@@ -19,6 +19,7 @@ class OrderReportExport implements FromCollection, WithHeadings, WithMapping, Sh
      */
     private $startDate;
     private $endDate;
+    private $index = 0;
 
 
     public function __construct($startDate, $endDate)
@@ -37,6 +38,7 @@ class OrderReportExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function headings(): array
     {
         return [
+            'No',
             'Order ID',
             'Tanggal Order',
             'Status Order',
@@ -52,24 +54,25 @@ class OrderReportExport implements FromCollection, WithHeadings, WithMapping, Sh
     {
         $detailProduk = $transaction->detailTransaction->map(function ($item) {
             return $item->product->name . ' - ' .
-                   $item->quantity . ' pcs, ' .
-                   'Harga: ' . $item->product->price . ', ' .
-                   'Ukuran: ' . $item->size . ', ' .
-                   'Warna: ' . $item->color . ', ' .
-                   'Catatan: ' . $item->notes . ', ' .
-                   'Sub Total: ' . ($item->product->price * $item->quantity);
+                $item->quantity . ' pcs, ' .
+                'Harga: ' . $item->product->price . ', ' .
+                'Ukuran: ' . $item->size . ', ' .
+                'Warna: ' . $item->color . ', ' .
+                'Catatan: ' . $item->notes . ', ' .
+                'Sub Total: ' . ($item->product->price * $item->quantity);
         })->implode(' | ');
         return [
 
-           $transaction->order_number,
-           Carbon::parse($transaction->date)->translatedFormat('d F Y'),
-           $transaction->status,
-           $transaction->headerTransaction->customer->name,
+            ++$this->index,
+            $transaction->order_number,
+            Carbon::parse($transaction->date)->translatedFormat('d F Y'),
+            $transaction->status,
+            $transaction->headerTransaction->customer->name,
             $detailProduk,
-           $transaction->shipment->shipping_address??null,
-           $transaction->shipment->price??null,
-           $transaction->headerTransaction->headerPayment->payment_status,
-           $transaction->headerTransaction->total_price,
+            $transaction->shipment->shipping_address ?? null,
+            $transaction->shipment->price ?? null,
+            $transaction->headerTransaction->headerPayment->payment_status,
+            $transaction->headerTransaction->total_price,
 
 
 
@@ -102,8 +105,8 @@ class OrderReportExport implements FromCollection, WithHeadings, WithMapping, Sh
         ];
 
         // Terapkan gaya ke seluruh area
-        $sheet->mergeCells('A1:I1');
-        $sheet->setCellValue('A1', 'Data Transaksi Periode '. Carbon::parse($this->startDate)->translatedFormat('F Y').' - '.  Carbon::parse($this->endDate)->translatedFormat('F Y'));
+        $sheet->mergeCells('A1:J1');
+        $sheet->setCellValue('A1', 'Data Transaksi Periode ' . Carbon::parse($this->startDate)->translatedFormat('F Y') . ' - ' . Carbon::parse($this->endDate)->translatedFormat('F Y'));
         $sheet->fromArray($this->headings(), null, 'A2');
 
         $sheet->getStyle('A1')->applyFromArray([
@@ -116,8 +119,8 @@ class OrderReportExport implements FromCollection, WithHeadings, WithMapping, Sh
                 'vertical' => 'center',
             ],
         ]);
-        $sheet->getStyle('A2:I2')->applyFromArray($headerStyle); // Header
-        $sheet->getStyle('A2:I' . ($sheet->getHighestRow()))->applyFromArray($dataStyle); // Data
+        $sheet->getStyle('A2:J2')->applyFromArray($headerStyle); // Header
+        $sheet->getStyle('A2:J' . ($sheet->getHighestRow()))->applyFromArray($dataStyle); // Data
 
         return [];
     }

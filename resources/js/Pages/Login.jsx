@@ -29,9 +29,9 @@ const Login = (props) => {
         event.preventDefault();
     };
     const handleLogin = async () => {
-        setIsEmptyUsername(username.length === 0);
+        setIsEmptyUsername(username.trim().length === 0);
         setIsEmptyPassword(password.length === 0);
-        if (username.length > 0 && password.length > 0) {
+        if (username.trim().length > 0 && password.length > 0) {
             setIsLoading(true);
             await login();
             setIsLoading(false);

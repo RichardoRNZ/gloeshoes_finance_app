@@ -15,12 +15,14 @@ const PaymentDetail = (props) => {
             field: "payment_date",
             headerName: "Payment Date",
             width: 120,
+            sortable: false,
             valueFormatter: (params) =>
                 dayjs(params?.value).format("DD MMMM YYYY"),
         },
         {
             field: "payment_amount",
             headerName: "Payment Amount",
+            sortable: false,
             valueFormatter: (params) => "Rp. " + params.value,
             width: 150,
         },
@@ -28,17 +30,22 @@ const PaymentDetail = (props) => {
             field: "description",
             headerName: "Description",
             width: 180,
+            sortable: false,
         },
         {
             field: "transfer_receipt",
             headerName: "Transfer Receipt",
             width: 150,
-            renderCell: (params) => (
-                <img
-                    src={"/storage/images/" + params.value}
-                    className="h-100 w-50"
-                />
-            ),
+            renderCell: (params) =>
+                params.value ? (
+                    <img
+                        src={"/storage/images/" + params.value}
+                        className="h-100 w-50"
+                    />
+                ) : (
+                    <></>
+                ),
+            sortable: false,
         },
     ];
     const [payments, setPayments] = useState(
@@ -49,7 +56,6 @@ const PaymentDetail = (props) => {
     const [rowId, setRowId] = useState(0);
     const [isUpdated, setIsUpdated] = useState(false);
 
-  
     const deletePayment = async () => {
         try {
             setIsLoading(true);
@@ -74,6 +80,7 @@ const PaymentDetail = (props) => {
             setIsLoading(false);
         }
     };
+   
     return (
         <div>
             <Loading isLoading={isLoading} />
@@ -98,7 +105,7 @@ const PaymentDetail = (props) => {
                         columns={columns}
                         setRowId={setRowId}
                         setIsUpdated={setIsUpdated}
-                        isStatusValid={props.status!=="completed"}
+                        isStatusValid={props.status !== "completed"}
                         type="payment"
                     />
                 </div>
