@@ -194,7 +194,7 @@ class ReportController extends Controller
             ->join('products', 'detail_transactions.product_id', '=', 'products.id')
             ->selectRaw("$groupBy as groupByColumn")
             ->selectRaw('SUM(detail_transactions.quantity) AS total_sales')
-            ->selectRaw('SUM(products.price) AS price')
+            ->selectRaw('SUM(detail_transactions.price) AS price')
             ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) as total_amount')
             ->selectRaw('SUM(products.cost * detail_transactions.quantity) AS total_cost')
             ->selectRaw('SUM(header_transactions.total_price - IFNULL(shipments.price, 0)) - SUM(products.cost * detail_transactions.quantity) AS gross_profit')
@@ -205,10 +205,10 @@ class ReportController extends Controller
         $totalSales =  DetailTransaction::join('products', 'detail_transactions.product_id', '=', 'products.id')
         ->join('transactions', 'detail_transactions.transaction_id', '=', 'transactions.id')
         ->selectRaw('products.name,SUM(detail_transactions.quantity) AS total_sold')
-        ->selectRaw('products.price')
-        ->selectRaw('SUM(detail_transactions.quantity*products.price) AS total_revenue')
+        ->selectRaw('detail_transactions.price')
+        ->selectRaw('SUM(detail_transactions.quantity*detail_transactions.price) AS total_revenue')
         ->whereBetween('date', [$startDate, $endDate])
-        ->groupBy('products.name','products.price')
+        ->groupBy('products.name','detail_transactions.price')
         ->get();
 
         $grossProfit->push(['groupByColumn' => 'Total', 'total_sales' => $grossProfit->sum('total_sales'),'price'=>$grossProfit->sum('price'), 'total_amount' =>  $grossProfit->sum('total_amount'), 'total_cost' =>  $grossProfit->sum('total_cost'), 'gross_profit' =>  $grossProfit->sum('gross_profit')]);

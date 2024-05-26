@@ -156,7 +156,7 @@ class OrderController extends Controller
                 'size' => $item->size,
                 'notes' => $item->notes,
                 'quantity' => $item->quantity,
-                'price' => $item->product->price,
+                'price' => $item->price,
                 'productName' => $item->product->name,
                 'imageUrl' => "/storage/images/" . $item->product->image,
 
@@ -206,20 +206,23 @@ class OrderController extends Controller
             return response()->json($message, 400);
         }
         $totalPrice = 0;
+        $products = Product::whereIn('id', array_column($request->products, 'productId'))->get()->keyBy('id');
         $transaction = Transaction::findOrFail($request->transactionId);
         $headerTransaction = $transaction->headerTransaction;
         $headerPayment = $headerTransaction->headerPayment;
         foreach ($request->products as $product) {
-
+            $productModel = $products[$product['productId']];
             $detailTransaction = DetailTransaction::create([
+
                 'transaction_id' => $request->transactionId,
                 'product_id' => $product['productId'],
                 'color' => $product['color'],
                 'size' => $product['size'],
                 'quantity' => $product['quantity'],
                 'notes' => $product['notes'],
+                'price' => $productModel->price,
             ]);
-            $totalPrice += $detailTransaction->product->price * $product['quantity'];
+            $totalPrice += $detailTransaction->price * $product['quantity'];
 
         }
         $headerTransaction->update(['total_price' => $headerTransaction->total_price += $totalPrice, 'updated_by' => 'System']);
@@ -246,7 +249,7 @@ class OrderController extends Controller
         $headerTransaction = $detailTransaction->transaction->headerTransaction;
         $headerPayment = $headerTransaction->headerPayment;
 
-        $headerTransaction->update(['total_price' => ($headerTransaction->total_price - $detailTransaction->product->price * $detailTransaction->quantity) + $newProduct->price * $request->quantity]);
+        $headerTransaction->update(['total_price' => ($headerTransaction->total_price - $detailTransaction->price * $detailTransaction->quantity) + $newProduct->price * $request->quantity]);
         $headerPayment->update(['payment_remaining_amount' => ($headerPayment->payment_remaining_amount - $detailTransaction->product->price * $detailTransaction->quantity) + $newProduct->price * $request->quantity]);
         $detailTransaction->update([
             'product_id' => $request->productId,
@@ -254,6 +257,7 @@ class OrderController extends Controller
             'size' => $request->size,
             'quantity' => $request->quantity,
             'notes' => $request->notes,
+            'price' => $newProduct->price,
         ]);
 
         return response()->json(['message' => "Successfully update product", 'data' => $detailTransaction], 200);
@@ -265,8 +269,8 @@ class OrderController extends Controller
         $detailTransaction = DetailTransaction::findOrFail($id);
         $headerTransaction = $detailTransaction->transaction->headerTransaction;
         $headerPayment = $headerTransaction->headerPayment;
-        $headerTransaction->update(['total_price' => ($headerTransaction->total_price - ($detailTransaction->product->price * $detailTransaction->quantity))]);
-        $headerPayment->update(['payment_remaining_amount' => ($headerPayment->payment_remaining_amount - ($detailTransaction->product->price * $detailTransaction->quantity))]);
+        $headerTransaction->update(['total_price' => ($headerTransaction->total_price - ($detailTransaction->price * $detailTransaction->quantity))]);
+        $headerPayment->update(['payment_remaining_amount' => ($headerPayment->payment_remaining_amount - ($detailTransaction->price * $detailTransaction->quantity))]);
         $detailTransaction->delete();
         return response()->json(['message' => "Successfully delete product", 'data' => $detailTransaction], 200);
     }

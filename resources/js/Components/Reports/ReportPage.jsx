@@ -1,4 +1,8 @@
-import { centerTextPlugin, generateRandomColors, options } from "@/Config/ChartConfig";
+import {
+    centerTextPlugin,
+    generateRandomColors,
+    options,
+} from "@/Config/ChartConfig";
 import { MenuProps } from "@/Config/SelectProps";
 import {
     ArrowDropDown,
@@ -51,9 +55,9 @@ const ReportPage = (props) => {
             setIsLoading(true);
             const response = await axios.get(
                 "/report/data?startDate=" +
-                    (fromDate??"") +
+                    (fromDate ?? "") +
                     "&endDate=" +
-                    (toDate??"") +
+                    (toDate ?? "") +
                     "&type=" +
                     reportTypeValue
             );
@@ -71,13 +75,15 @@ const ReportPage = (props) => {
     };
     const errorMessage = React.useMemo(() => {
         switch (true) {
-            case error === "maxDate" && reportTypeValue.split(" ")[0] === "Monthly": {
+            case error === "maxDate" &&
+                reportTypeValue.split(" ")[0] === "Monthly": {
                 return "Date difference should not exceed 31 days";
             }
-            case error === "maxDate" && reportTypeValue.split(" ")[0] === "Annual": {
+            case error === "maxDate" &&
+                reportTypeValue.split(" ")[0] === "Annual": {
                 return "Date difference should not exceed 12 months";
             }
-            case error === "maxDate" :{
+            case error === "maxDate": {
                 return "From date must be lower than To Date";
             }
             default: {
@@ -239,7 +245,7 @@ const ReportPage = (props) => {
                                                 value={fromDate}
                                                 disableFuture
                                                 onError={(err) => setError(err)}
-                                                maxDate={dayjs(toDate)??null}
+                                                maxDate={dayjs(toDate) ?? null}
                                                 slotProps={{
                                                     textField: {
                                                         helperText:
@@ -307,7 +313,7 @@ const ReportPage = (props) => {
                                     )}
                                     <Button
                                         variant="contained"
-                                        onClick={() => getReportData()}
+                                        onClick={errorMessage.length ===0? ()=> getReportData():null}
                                     >
                                         <Search /> Search
                                     </Button>
@@ -333,10 +339,19 @@ const ReportPage = (props) => {
                                                 width: "80vw",
                                             }}
                                         >
-                                            <Line
-                                                data={chartDataSet}
-                                                options={options}
-                                            />
+                                            {reportData.dataByType?.currentData
+                                                .length === 0 &&
+                                            reportData.dataByType?.lastData
+                                                .length === 0 ? (
+                                                <div className="text-center text-dark d-flex align-items-center justify-content-center mt-5">
+                                                    No Data
+                                                </div>
+                                            ) : (
+                                                <Line
+                                                    data={chartDataSet}
+                                                    options={options}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -357,10 +372,17 @@ const ReportPage = (props) => {
                                                 width: "55vw",
                                             }}
                                         >
-                                            <Bar
-                                                data={barChartDataSet}
-                                                options={options}
-                                            />
+                                            {reportData.totalTransactionData
+                                                ?.length > 0 ? (
+                                                <Bar
+                                                    data={barChartDataSet}
+                                                    options={options}
+                                                />
+                                            ) : (
+                                                <div className="text-center text-dark d-flex align-items-center justify-content-center mt-5">
+                                                    No Data
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -379,11 +401,18 @@ const ReportPage = (props) => {
                                                 width: "25vw",
                                             }}
                                         >
-                                            <Doughnut
-                                                data={doughnutChartDataSet}
-                                                options={options}
-                                                plugins={[centerTextPlugin]}
-                                            />
+                                            {reportData.soldProducts?.length >
+                                            0 ? (
+                                                <Doughnut
+                                                    data={doughnutChartDataSet}
+                                                    options={options}
+                                                    plugins={[centerTextPlugin]}
+                                                />
+                                            ) : (
+                                                <div className="text-center text-dark d-flex align-items-center justify-content-center mt-5">
+                                                    No Data
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

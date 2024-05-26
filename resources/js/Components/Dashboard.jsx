@@ -108,14 +108,16 @@ const Dashboard = (props) => {
         labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"],
         datasets: [
             {
-                label: "Total Revenue in "+dayjs().format('MMMM'),
+                label: "Total Revenue in " + dayjs().format("MMMM"),
                 fill: true,
                 data: props.currentMonthRevenue.map((row) => row.total_amount),
                 borderColor: "rgb(53, 162, 235)",
                 backgroundColor: "rgba(53, 162, 235, 0.5)",
             },
             {
-                label: "Total Revenue in "+dayjs().subtract(1,'month').format('MMMM'),
+                label:
+                    "Total Revenue in " +
+                    dayjs().subtract(1, "month").format("MMMM"),
                 fill: true,
                 data: props.lastMonthRevenue.map((row) => row.total_amount),
                 borderColor: "rgb(255, 99, 132)",
@@ -135,7 +137,6 @@ const Dashboard = (props) => {
             },
         ],
     };
-
 
     return (
         <>
@@ -184,7 +185,10 @@ const Dashboard = (props) => {
                             style={{ minHeight: "360px" }}
                         >
                             <div className="card-body">
-                                <h5 class="card-title">{"Total Revenue in "+dayjs().format('MMMM')}</h5>
+                                <h5 class="card-title">
+                                    {"Total Revenue in " +
+                                        dayjs().format("MMMM")}
+                                </h5>
                                 <div className="d-flex justify-content-end mb-4">
                                     <Link
                                         underline="none"
@@ -202,10 +206,16 @@ const Dashboard = (props) => {
                                         width: "55vw",
                                     }}
                                 >
-                                    <Line
-                                        data={chartDataSet}
-                                        options={options}
-                                    />
+                                    {props.currentMonthRevenue.length === 0 ? (
+                                        <div className="text-center text-dark d-flex align-items-center justify-content-center">
+                                            No Data
+                                        </div>
+                                    ) : (
+                                        <Line
+                                            data={chartDataSet}
+                                            options={options}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -234,6 +244,11 @@ const Dashboard = (props) => {
                                         width: "25vw",
                                     }}
                                 >
+                                    {props.soldProducts.length === 0 && (
+                                        <div className="text-center text-dark d-flex align-items-center justify-content-center">
+                                            No Data
+                                        </div>
+                                    )}
                                     <Pie
                                         data={pieChartDataSet}
                                         options={options}

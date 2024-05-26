@@ -22,7 +22,7 @@ export const centerTextPlugin = {
         const width = chart.width;
         const height = chart.height;
         const centerX = width / 2;
-        const centerY = height/1.7;
+        const centerY = height/1.5;
 
         ctx.save();
         ctx.textAlign = "center";

@@ -82,7 +82,7 @@ const OrderForm = (props) => {
             { productId: "", size: "", color: "", notes: "", quantity:"" },
         ]);
         setOrderDate(null);
-        setCustomerId(0);
+        setCustomerId("");
     }
 
 

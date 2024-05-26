@@ -18,6 +18,7 @@ class DetailTransaction extends Model
         'color',
         'size',
         'notes',
+        'price',
         'created_at',
         'updated_at',
     ];
