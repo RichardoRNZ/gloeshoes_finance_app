@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ProductExport;
-use App\Models\product;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
