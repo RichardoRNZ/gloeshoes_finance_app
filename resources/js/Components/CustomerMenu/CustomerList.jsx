@@ -162,10 +162,10 @@ const Customer = (props) => {
 
     return (
         <>
-            {hasError && <Error />}
+            {/* {hasError && <Error />} */}
 
             <Loading isLoading={showLoading} />
-            {!hasError && (
+            { (
                 <div className="container">
                     <div className="mb-4">
                         <Breadcrumbs aria-label="breadcrumb">

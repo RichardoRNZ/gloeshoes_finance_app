@@ -13,11 +13,6 @@ use Maatwebsite\Excel\Facades\Excel;
 class CustomerController extends Controller
 {
     //
-    public function index()
-    {
-        return Inertia::render('Home');
-    }
-
     public function getAllCustomer(Request $request)
     {
         // $customers = Customer::all();

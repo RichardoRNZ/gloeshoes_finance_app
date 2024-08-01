@@ -175,9 +175,7 @@ const Product = (props) => {
                 handleClick={() => handleDeleteClick()}
             />
             <Loading isLoading={showLoading} />
-            {hasError ? (
-                <Error />
-            ) : (
+            {(
                 <div className="container">
                     <div className="mb-4">
                         <Breadcrumbs aria-label="breadcrumb">
